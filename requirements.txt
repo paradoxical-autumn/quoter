@@ -1,0 +1,8 @@
+hikari
+hikari-lightbulb
+hikari-miru
+Pillow
+python-dotenv
+imagetext_py
+requests
+asyncio
