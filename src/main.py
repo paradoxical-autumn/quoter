@@ -393,11 +393,11 @@ async def about(ctx: lightbulb.context.SlashContext):
     view = aboutAndHelpButtons(timeout=60)
 
     aboutEmbedData = hikari.Embed(title="About Quoter",
-                                  description=f"© Autumn 2023\n*UGC is not moderated.*",
+                                  description=f"© [just-autumn](https://github.com/just-autumn) 2024\n*UGC is not moderated.*",
                                   color=0xFF6D00)
     aboutEmbedData.add_field(name="Invite links", value="[Application & Bot user (Recommended)](https://discord.com/api/oauth2/authorize?client_id=1034045810993803325&permissions=274877959168&scope=applications.commands%20bot)\n\n[Application (If you don't want the app added as a member)](https://discord.com/api/oauth2/authorize?client_id=1034045810993803325&scope=applications.commands)", inline=True)
     aboutEmbedData.add_field(name="Debugging information", value=f"Build: {build}\nInstance started <t:{INSANCE_START_TIME}:R>\nModules rebooted <t:{last_module_reboot}:R>", inline=True)
-    aboutEmbedData.add_field(name="Useful links", value=f"[Quoter's Website](https://qtr.its-autumn.xyz/#)\nSupport serving [COMING SOON]", inline=True)
+    aboutEmbedData.add_field(name="Useful links", value=f"[Quoter's Website](https://qtr.its-autumn.xyz/#)\n[GitHub repo](https://github.com/just-autumn/quoter)", inline=True)
 
     message = await ctx.respond(aboutEmbedData, components=view)
     await view.start(message)
