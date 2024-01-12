@@ -47,7 +47,7 @@ else:
 #atexit.register(exitFunc)
 
 # init constants, these are self explanitory
-ALERTS_HOOK = "https://canary.discord.com/api/webhooks/1117139818447646732/MAe-7s2mJRv1f-3OsuJT3ErW6MEFAXqdceV6sABP0Na9MTdjZVSel_nEY_6MnIwrmJfF"
+ALERTS_HOOK = "<NULL>"
 INSANCE_START_TIME = math.floor(time.time())
 USER_PAIR_OFFSET = 128
 QUOTE_SIZE = 96
@@ -68,6 +68,7 @@ if IS_BETA:
 else:
     BOT_TOKEN = os.environ["BOT_TOKEN"]
 
+"""
 def exitProtocols():
     embedData = {}
     embedData["embeds"] = [
@@ -79,9 +80,12 @@ def exitProtocols():
         }
     ]
     requests.post(ALERTS_HOOK, json = embedData)
+"""
 
+"""
 if not IS_BETA:
     atexit.register(exitProtocols)
+"""
 
 # create the bot application
 bot = lightbulb.BotApp(BOT_TOKEN, allow_color=False)
@@ -132,7 +136,7 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
             }
         ]
 
-        requests.post("https://canary.discord.com/api/webhooks/1122518470899286116/L15uhB_gf2OuxWIz5lb-kROHu4XpcYak3CaaxVi_lW9yzvyelxAh2LXwWMZjE1cyuTrZ", json=errorEmbedData)
+        #requests.post("<NULL>", json=errorEmbedData)
         # await event.context.respond(f"Something went wrong during invocation of command `{event.context.command.name}`.")
         await event.context.respond(hikari.Embed(title=f"[500] Internal Server error", description=f"An error occurred.", color=0xED4245))
         logging.fatal(f"{event.exception.original}")
@@ -355,7 +359,7 @@ class feedBackModal(miru.Modal):
                 ]
             }
         ]
-        requests.post("https://canary.discord.com/api/webhooks/1122536317989949452/bcKEm97V4w5oUIA2-zl2WofQAyfVDpsv8Tz4wGqTqe3qtJKAhi6n_yObtqLPOvX4X3J9", json=feedbackEmbedData)
+        #requests.post("<NULL>", json=feedbackEmbedData)
 
 class aboutAndHelpButtons(miru.View):
     @miru.button(label="Give feedback", style=hikari.ButtonStyle.SECONDARY)
@@ -406,6 +410,7 @@ async def about(ctx: lightbulb.context.SlashContext):
 
     await message.edit(aboutEmbedData, components=view)
 
+"""
 class reportModal(miru.Modal):
     why = miru.TextInput(label="Why are you reporting them?", style=hikari.TextInputStyle.SHORT, required=True)
 
@@ -445,20 +450,22 @@ class reportModal(miru.Modal):
         ]
 
         # this version creates a clone of the image
-        #reportResponse = requests.post(r"https://canary.discord.com/api/webhooks/1152022137658421279/pPjZ6_g9M5GfOs1JMvxi4k83GUkuKSV2O8BuP1M-1i_-SzwAq3r2AESm3HOrVDMqpuwL", data={"content": f"# New report\n||{self.reportAuthor.username} (`{self.reportAuthor.id}`)|| said ||{self.why.value}||\n### Message content:\n{self.messageContent.content}"}, files={"file": open(f"outputs/SPOILER_R_{reportName}.png", "rb")})
+        #reportResponse = requests.post(r"<NULL>", data={"content": f"# New report\n||{self.reportAuthor.username} (`{self.reportAuthor.id}`)|| said ||{self.why.value}||\n### Message content:\n{self.messageContent.content}"}, files={"file": open(f"outputs/SPOILER_R_{reportName}.png", "rb")})
         
         # this version uses the currently uploaded one
-        reportResponse = requests.post(r"https://canary.discord.com/api/webhooks/1152022137658421279/pPjZ6_g9M5GfOs1JMvxi4k83GUkuKSV2O8BuP1M-1i_-SzwAq3r2AESm3HOrVDMqpuwL", json=reportEmbedData)
+        #reportResponse = requests.post(r"<NULL>", json=reportEmbedData)
 
-        if reportResponse.status_code == 204 or reportResponse.status_code == 200:
-            await response.edit("Report sent.")
-        else:
-            await response.edit(f"Error sending report.")
-            print(reportResponse.status_code)
-            print(reportResponse.text)
+        #if reportResponse.status_code == 204 or reportResponse.status_code == 200:
+        #    await response.edit("Report sent.")
+        #else:
+        #    await response.edit(f"Error sending report.")
+        #    print(reportResponse.status_code)
+        #    print(reportResponse.text)
         
         #os.remove(f"outputs/SPOILER_R_{reportName}.png")
+"""
 
+"""
 class reportView(miru.View):
     @miru.button(style=hikari.ButtonStyle.DANGER, label="Report")
     async def yesReport(self, button: miru.Button, ctx: miru.ViewContext) -> None:
@@ -467,8 +474,10 @@ class reportView(miru.View):
         modal.messageContent = self.messageContent
         modal.reportAuthor = ctx.author
         await ctx.respond_with_modal(modal)
+"""
 
 # report system
+"""
 @bot.command
 @lightbulb.add_cooldown(300, 1, globalCooldownBucket)
 @lightbulb.command('Report quote', 'Report a user\'s quote.', ephemeral=True, auto_defer=True)
@@ -489,6 +498,7 @@ async def reportQt(ctx: lightbulb.Context):
             await ctx.respond("It doesn't look like that's a quote?")
     else:
         await ctx.respond("You can only report messages sent by me. If you use Quoter PTB/Canary, please report using that.")
+"""
 
 embedData = {}
 
@@ -502,7 +512,8 @@ embedData["embeds"] = [
 ]
 
 if not IS_BETA:
-    requests.post(ALERTS_HOOK, json=embedData)
+    #requests.post(ALERTS_HOOK, json=embedData)
+    pass
 
 with open("cfgs/messages.json", "r") as fp:
     RAW_MESSAGES = json.load(fp)
