@@ -1,0 +1,1 @@
+INSERT INTO settings VALUES (?, 1, 0, "default", 0, 0, NULL)
