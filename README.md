@@ -5,4 +5,4 @@
 Quoter is a Discord bot that allows for users to make visual quotes out of images, similar to those you can get by searching for "motivational quotes" on the internet.
 
 ## Running
-<tbc>
+<noparse><tbc></noparse>
