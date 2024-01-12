@@ -156,3 +156,5 @@ cython_debug/
 src/build
 src/dist
 *.spec
+
+.vscode/
