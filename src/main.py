@@ -47,7 +47,6 @@ else:
 #atexit.register(exitFunc)
 
 # init constants, these are self explanitory
-ALERTS_HOOK = "<NULL>"
 INSANCE_START_TIME = math.floor(time.time())
 USER_PAIR_OFFSET = 128
 QUOTE_SIZE = 96
@@ -60,32 +59,8 @@ last_module_reboot = math.floor(time.time())
 global build
 build = "v3.0.1"
 
-IS_BETA = True
 dotenv.load_dotenv()
-if IS_BETA:
-    logging.warning("// RUNNING IN BETA MODE //")
-    BOT_TOKEN = os.environ["CANARY_TOKEN"]
-else:
-    BOT_TOKEN = os.environ["BOT_TOKEN"]
-
-"""
-def exitProtocols():
-    embedData = {}
-    embedData["embeds"] = [
-        {
-            "description": "ouch the server died. someone yell at autumn kthxbye",
-            "title": "Quoter died, soz bout that.",
-            "color": 0xff6d71,
-            "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f%z')
-        }
-    ]
-    requests.post(ALERTS_HOOK, json = embedData)
-"""
-
-"""
-if not IS_BETA:
-    atexit.register(exitProtocols)
-"""
+BOT_TOKEN = os.environ["BOT_TOKEN"]
 
 # create the bot application
 bot = lightbulb.BotApp(BOT_TOKEN, allow_color=False)
@@ -97,20 +72,6 @@ imgtxt.FontDB.LoadFromDir("./defaultAssets/fonts")
 cooldownList = ["HEY!", "Wait up!", ">:C", "a.", ":ice_cube:", ":fire: :fire: :fire:", "Cooldown'd", "Fun remover", "Prevent crashing Autumn's drive Inator", ":)", ":nerd: :nerd: :nerd:"]
 permissionErrorFlavourText = ["Someone's been naughty!", "nope.", "I don't think I can do that...", ":nerd:", ":warning:", "oi", "The law requires I answer no.", "`permissionError`"]
 errorFlavourText = ["i didn't touch nothing!", "deleting system 32...", "umm uhh", "im so silly!", "oops...", "i think i dropped something.", "[500] internal server error"]
-
-
-global cleanedBannedWords
-cleanedBannedWords = []
-
-"""
-with open("cfgs/profanity_filter.wlist", "r", encoding="utf-8") as fp:
-    bannedWords = fp.readlines()
-    
-    for i in bannedWords:
-        i = i.lower()
-        i = i.strip("\n")
-        cleanedBannedWords.append(i)
-"""
 
 # error handler
 @bot.listen(lightbulb.CommandErrorEvent)
@@ -136,7 +97,7 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
             }
         ]
 
-        #requests.post("<NULL>", json=errorEmbedData)
+        requests.post(os.environ["ERROR_WEBHOOK"], json=errorEmbedData)
         # await event.context.respond(f"Something went wrong during invocation of command `{event.context.command.name}`.")
         await event.context.respond(hikari.Embed(title=f"[500] Internal Server error", description=f"An error occurred.", color=0xED4245))
         logging.fatal(f"{event.exception.original}")
@@ -157,21 +118,9 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
 
 #input("Suspended.")
 
-# create a function to wrap the words.
-"""
-def wrap_words(string, chars):
-    textLists = tw(width=chars, max_lines=14).wrap(string)
-    ret = ''
-
-    for i in textLists:
-        ret += i + "\n"
-    return ret
-"""
-
 # init cooldowns
 quoteCooldownBucket = lightbulb.buckets.UserBucket
 globalCooldownBucket = lightbulb.buckets.UserBucket
-feedBackCooldownBucket = lightbulb.buckets.UserBucket
 
 with open("cfgs/ranks.json", "r") as fp:
     ranks = json.load(fp)
@@ -303,70 +252,6 @@ async def adminTools(event: hikari.MessageCreateEvent):
 async def ping(ctx):
     await ctx.respond(hikari.Embed(title=f"Pong!", color=0xFFB37C).set_footer(f"Running on Python {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro} for {uname.system} {uname.release}"))
 
-class feedBackModal(miru.Modal):
-    feedbackType = miru.TextInput(label="What type of feedback?", style=hikari.TextInputStyle.SHORT, required=True, placeholder="Suggestion, bug report or something else?")
-    actualFeedback = miru.TextInput(label="Feedback:", style=hikari.TextInputStyle.PARAGRAPH, required=True, placeholder="Enter your feedback here!")
-    
-    async def callback(self, ctx: miru.ModalContext) -> None:
-        try:
-            with open("cfgs/feedbackBans.json", "r") as fp:
-                feedbackbans = json.load(fp)
-        except Exception as err:
-            print(f"{'[Unable to get feedback bans]':=^50}")
-            print(f"Why? -> {err}")
-            if not os.path.isdir("cfgs"):
-                os.mkdir("cfgs")
-    
-            feedbackbans = []
-            with open("cfgs/feedbackBans.json", "w") as fp:
-                json.dump(feedbackbans, fp, indent=4)
-        
-        if ctx.author.id in feedbackbans:
-            await ctx.respond(hikari.Embed(title=f"Banned", description=f"You're banned from submitting feedback."), flags=hikari.MessageFlag.EPHEMERAL)
-            return
-        
-        if ctx.author.avatar_url:
-            aviUrl = str(ctx.author.avatar_url)
-        else:
-            aviUrl = "https://cdn.discordapp.com/attachments/907681321718009866/1122545490731487254/quoter_-_please_do_not_publically_use_this_image.png"
-        
-        if ctx.author.global_name:
-            nickname = ctx.author.global_name
-        else:
-            nickname = ctx.author.username
-
-        await ctx.respond(f"Thanks for the feedback!", flags=hikari.MessageFlag.EPHEMERAL)
-        feedbackEmbedData = {
-            "username": nickname,
-            "avatar_url": aviUrl,
-        }
-        feedbackEmbedData["embeds"] = [
-            {
-                "title": "Quoter feedback received.",
-                "color": 0x414141,
-                "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f%z'),
-                "fields": [
-                    {
-                        "name": "Context:",
-                        "value": f"Sent by @{ctx.author.username}\nTheir ID: `{ctx.author.id}`\nType: {self.feedbackType.value}",
-                        "inline": True
-                    },
-                    {
-                        "name": "Feedback:",
-                        "value": f"{self.actualFeedback.value}",
-                        "inline": True
-                    }
-                ]
-            }
-        ]
-        #requests.post("<NULL>", json=feedbackEmbedData)
-
-class aboutAndHelpButtons(miru.View):
-    @miru.button(label="Give feedback", style=hikari.ButtonStyle.SECONDARY)
-    async def feedbackButton(self, button: miru.Button, ctx: miru.ViewContext) -> None:
-        modal = feedBackModal(title="Quoter Feedback")
-        await ctx.respond_with_modal(modal)
-
 # help command
 @bot.command
 @lightbulb.add_cooldown(7, 1, globalCooldownBucket)
@@ -378,7 +263,7 @@ async def help(ctx):
                                  color=0x00FF00)
     helpEmbedData.add_field(name="Basic usage", value="1. Right click on a message (or hold down on mobile)\n2. Go to Apps\n3. Hit \"Quote\" (the one with the bot's icon!)", inline=True)
     helpEmbedData.add_field(name="Custom usage", value="You can use </custom:1104511640466108506> `[/custom]` to make a custom quote. These are tagged as \"Unofficial\" because they can't be verified.", inline=True)
-    helpEmbedData.add_field(name="Opting out/in", value=f"There's a button attached to /about, you can use that.")
+    helpEmbedData.add_field(name="Opting out/in", value=f"Use the </settings:1154868394428997672> `[/settings]` panel and go to \"Danger zone\" and click \"Block quotes\"")
 
     await ctx.respond(helpEmbedData)
 
@@ -390,7 +275,6 @@ async def help(ctx):
 async def about(ctx: lightbulb.context.SlashContext):
     global last_module_reboot
     global build
-    view = aboutAndHelpButtons(timeout=60)
 
     aboutEmbedData = hikari.Embed(title="About Quoter",
                                   description=f"© [paradox](https://github.com/paradoxical-autumn) 2024\n*UGC is not moderated.*",
@@ -399,121 +283,7 @@ async def about(ctx: lightbulb.context.SlashContext):
     aboutEmbedData.add_field(name="Debugging information", value=f"Build: {build}\nInstance started <t:{INSANCE_START_TIME}:R>\nModules rebooted <t:{last_module_reboot}:R>", inline=True)
     aboutEmbedData.add_field(name="Useful links", value=f"[Quoter's Website](https://qtr.its-autumn.xyz/#)\n[GitHub repo](https://github.com/paradoxical-autumn/quoter)", inline=True)
 
-    message = await ctx.respond(aboutEmbedData, components=view)
-    await view.start(message)
-
-    await view.wait()
-
-    aboutEmbedData.add_field(name="Timed out", value="The buttons attached to this message have timed out. Re-run the command if you need them.")
-
-    view.feedbackButton.disabled = True
-
-    await message.edit(aboutEmbedData, components=view)
-
-"""
-class reportModal(miru.Modal):
-    why = miru.TextInput(label="Why are you reporting them?", style=hikari.TextInputStyle.SHORT, required=True)
-
-    async def callback(self, ctx: miru.ModalContext) -> None:
-        #await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=hikari.MessageFlag.EPHEMERAL)
-        response = await ctx.respond("Sending report...", flags=hikari.MessageFlag.EPHEMERAL)
-
-        #qtDl = Image.open(requests.get(f"{self.attachment}", stream=True).raw)
-        #reportName = ""
-        #for _ in range(16):
-        #    reportName += random.choice(string.ascii_letters)
-
-        #qtDl.save(rf"outputs/SPOILER_R_{reportName}.png")
-        reportEmbedData = {}
-        reportEmbedData["embeds"] = [
-            {
-                "title": "Report received",
-                "color": 0xFF0000,
-                "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f%z'),
-                "image": {
-                    "url": str(self.attachment)
-                },
-                "description": f"{self.messageContent.content}",
-                "fields":  [
-                    {
-                        "name": "Report info",
-                        "value": f"{self.why.value}",
-                        "inline": True
-                    },
-                    {
-                        "name": "Context",
-                        "value": f"`{self.messageContent.content}`\n\nReported by {self.reportAuthor.username} `{self.reportAuthor.id}`",
-                        "inline": True
-                    }
-                ]
-            }
-        ]
-
-        # this version creates a clone of the image
-        #reportResponse = requests.post(r"<NULL>", data={"content": f"# New report\n||{self.reportAuthor.username} (`{self.reportAuthor.id}`)|| said ||{self.why.value}||\n### Message content:\n{self.messageContent.content}"}, files={"file": open(f"outputs/SPOILER_R_{reportName}.png", "rb")})
-        
-        # this version uses the currently uploaded one
-        #reportResponse = requests.post(r"<NULL>", json=reportEmbedData)
-
-        #if reportResponse.status_code == 204 or reportResponse.status_code == 200:
-        #    await response.edit("Report sent.")
-        #else:
-        #    await response.edit(f"Error sending report.")
-        #    print(reportResponse.status_code)
-        #    print(reportResponse.text)
-        
-        #os.remove(f"outputs/SPOILER_R_{reportName}.png")
-"""
-
-"""
-class reportView(miru.View):
-    @miru.button(style=hikari.ButtonStyle.DANGER, label="Report")
-    async def yesReport(self, button: miru.Button, ctx: miru.ViewContext) -> None:
-        modal = reportModal(title="Report quote")
-        modal.attachment = str(self.attachment)
-        modal.messageContent = self.messageContent
-        modal.reportAuthor = ctx.author
-        await ctx.respond_with_modal(modal)
-"""
-
-# report system
-"""
-@bot.command
-@lightbulb.add_cooldown(300, 1, globalCooldownBucket)
-@lightbulb.command('Report quote', 'Report a user\'s quote.', ephemeral=True, auto_defer=True)
-@lightbulb.implements(lightbulb.MessageCommand)
-async def reportQt(ctx: lightbulb.Context):
-    me = bot.get_me()
-    if ctx.options.target.author.id == me.id:
-        if ctx.options.target.attachments:
-            view = reportView()
-            view.messageContent = ctx.options.target
-            view.attachment = ctx.options.target.attachments[0].url
-            view.reportAuthor = ctx.author
-
-            msg = await ctx.respond("Are you sure you wanna report this message?\nThis WILL:\n- Send the quote\n- Send YOUR user information\n- Send THEIR user information\n- Send whether the quote was official or not\n\nBy reporting you also confirm that it is truthful and made in good faith. Please also do not submit false, duplicate or test reports.", components=view)
-
-            await view.start(msg)
-        else:
-            await ctx.respond("It doesn't look like that's a quote?")
-    else:
-        await ctx.respond("You can only report messages sent by me. If you use Quoter PTB/Canary, please report using that.")
-"""
-
-embedData = {}
-
-embedData["embeds"] = [
-    {
-        "description": "that's was unexpected.",
-        "title": "woah the code actually booted up.",
-        "color": 0x71ff6d,
-        "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f%z')
-    }
-]
-
-if not IS_BETA:
-    #requests.post(ALERTS_HOOK, json=embedData)
-    pass
+    await ctx.respond(aboutEmbedData)
 
 with open("cfgs/messages.json", "r") as fp:
     RAW_MESSAGES = json.load(fp)
