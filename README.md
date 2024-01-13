@@ -9,9 +9,10 @@ I'd prefer it if you just added [my version](https://discord.com/oauth2/authoriz
 
 Nevertheless...
 ## Running
-1. **Downloading the code**
+1. **Downloading the production ready code**
 
-Meet my old friend, `git clone`. Seriously, that's it.
+Check out the [latest releases](https://github.com/paradoxical-autumn/quoter/releases) for the most up to date and "finished" build. That doesn't mean stable build, just up to date and "functional".
+If you need to guarantee stability, get a stable build from that list.
 
 2. **Set up python**
 
