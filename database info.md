@@ -1,4 +1,4 @@
-# yo wassup autumn
+# database information and setup
 
 ## database formatting
 ### SETTINGS TABLE
