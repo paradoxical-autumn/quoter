@@ -10,18 +10,22 @@ I'd prefer it if you just added [my version](https://discord.com/oauth2/authoriz
 Nevertheless...
 ## Running
 0. **Downloading the code**
-Meet my old friend, `git clone`. Seriously, that's it.
 
+Meet my old friend, `git clone`. Seriously, that's it.
 2. **Set up python**
+
 Quoter currently runs Python `3.11.3` on a GNU/Linux webserver, but future versions of python and a windows PC should work too.
 
 3. (Optional) **Set up a venv**
+
 *(So the packages don't interfere with your other projects)*
 Run `python3 -m venv venv`. if you're using windows it's probably `python` and not `python3`
 
 4. **Install the requirements**
+
 Just run `pip install -U -r requirements.txt`
 
 5. **Run the bot client**
+
 We don't need to compile it. The command I use to run it is `python3 -OO main.py`
 *(the `-OO` flag does some optimisation)*
