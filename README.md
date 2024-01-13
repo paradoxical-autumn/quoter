@@ -30,3 +30,8 @@ Just run `pip install -U -r requirements.txt`
 
 We don't need to compile it. The command I use to run it is `python3 -OO main.py`
 *(the `-OO` flag does some optimisation)*
+
+## disclaimer
+this code is an absolute mess as ive been working on it for years and never deleted unused features, just commented them out.
+
+also, since it was only me working on it, i didn't add many comments.
