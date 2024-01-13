@@ -69,8 +69,8 @@ imgtxt.FontDB.SetDefaultEmojiOptions(imgtxt.EmojiOptions(parse_discord_emojis=Tr
 imgtxt.FontDB.LoadFromDir("./defaultAssets/fonts")
 
 # the messages that get displayed when an error occurs
-cooldownList = ["HEY!", "Wait up!", ">:C", "a.", ":ice_cube:", ":fire: :fire: :fire:", "Cooldown'd", "Fun remover", "Prevent crashing Autumn's drive Inator", ":)", ":nerd: :nerd: :nerd:"]
-permissionErrorFlavourText = ["Someone's been naughty!", "nope.", "I don't think I can do that...", ":nerd:", ":warning:", "oi", "The law requires I answer no.", "`permissionError`"]
+cooldownList = ["HEY!", "Wait up!", ">:C", "a.", ":ice_cube:", ":fire: :fire: :fire:", "Cooldown'd", "Fun remover", ":)", ":nerd: :nerd: :nerd:"]
+permissionErrorFlavourText = ["nope.", "I don't think I can do that...", ":nerd:", ":warning:", "oi", "The law requires I answer no.", "`permissionError`", "nuh uh."]
 errorFlavourText = ["i didn't touch nothing!", "deleting system 32...", "umm uhh", "im so silly!", "oops...", "i think i dropped something.", "[500] internal server error"]
 
 # error handler
@@ -99,17 +99,17 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
 
         requests.post(os.environ["ERROR_WEBHOOK"], json=errorEmbedData)
         # await event.context.respond(f"Something went wrong during invocation of command `{event.context.command.name}`.")
-        await event.context.respond(hikari.Embed(title=f"[500] Internal Server error", description=f"An error occurred.", color=0xED4245))
+        await event.context.respond(hikari.Embed(title=random.choice(errorFlavourText), description=f"An error occurred.", color=0xED4245))
         logging.fatal(f"{event.exception.original}")
 
     # Unwrap the exception to get the original cause
     exception = event.exception.__cause__ or event.exception
 
     if isinstance(exception, lightbulb.NotOwner):
-        await event.context.respond(hikari.Embed(title=f"[401] Unauthorised", description=":no_entry_sign: You don't have authorisation to run that command!", color=0xFEE75C))
+        await event.context.respond(hikari.Embed(title=random.choice(permissionErrorFlavourText), description=":no_entry_sign: You don't have authorisation to run that command!", color=0xFEE75C))
 
     elif isinstance(exception, lightbulb.CommandIsOnCooldown):
-        await event.context.respond(hikari.Embed(title="[429] Too many requests", description=f"Retry after `{exception.retry_after:.2f}` seconds.", color=0x5865F2))
+        await event.context.respond(hikari.Embed(title=random.choice(cooldownList), description=f"Retry after `{exception.retry_after:.2f}` seconds.", color=0x5865F2))
 
     elif ...:
         ...
@@ -263,7 +263,7 @@ async def help(ctx):
                                  color=0x00FF00)
     helpEmbedData.add_field(name="Basic usage", value="1. Right click on a message (or hold down on mobile)\n2. Go to Apps\n3. Hit \"Quote\" (the one with the bot's icon!)", inline=True)
     helpEmbedData.add_field(name="Custom usage", value="You can use </custom:1104511640466108506> `[/custom]` to make a custom quote. These are tagged as \"Unofficial\" because they can't be verified.", inline=True)
-    helpEmbedData.add_field(name="Opting out/in", value=f"Use the </settings:1154868394428997672> `[/settings]` panel and go to \"Danger zone\" and click \"Block quotes\"")
+    helpEmbedData.add_field(name="Disabling the bot", value=f"Use the </settings:1154868394428997672> `[/settings]` panel and go to \"Danger zone\" and click \"Block quotes\"")
 
     await ctx.respond(helpEmbedData)
 
