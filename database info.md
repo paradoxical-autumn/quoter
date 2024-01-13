@@ -7,7 +7,7 @@
 | primary  | ✅   |        |        |            |           |         |          |
 | unique   | ✅   |        |        |            |           |         |          |
 | not null | ✅   | ✅      | ✅      | ✅          | ✅         | ✅       |          |
-| default  | -1  | 0      | 1      | "default"  | 0         | 0       | *NULL*   |
+| default  | -1  | 1      | 0      | "default"  | 0         | 0       | *NULL*   |
 
 ## background integer calculation
 here's the table for background calculation
