@@ -9,9 +9,10 @@ I'd prefer it if you just added [my version](https://discord.com/oauth2/authoriz
 
 Nevertheless...
 ## Running
-0. **Downloading the code**
+1. **Downloading the code**
 
 Meet my old friend, `git clone`. Seriously, that's it.
+
 2. **Set up python**
 
 Quoter currently runs Python `3.11.3` on a GNU/Linux webserver, but future versions of python and a windows PC should work too.
