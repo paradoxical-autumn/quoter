@@ -56,7 +56,7 @@ async def unofficial(ctx: lightbulb.MessageContext):
         authorData = cur.fetchall()
         
         try:
-            await ctx.author.send(f"# Welcome to Quoter, {ctx.author.mention}!\n*Your data has been set up/ported over to the new V3 API.*\nYou can access settings by running /settings!\n\nHave a fun time using Quoter!")
+            await ctx.author.send(f"# Welcome to Quoter, {ctx.author.mention}!\nYou can access settings by running </settings:1154868394428997672>!\n\nHave a fun time using Quoter!")
         except hikari.ForbiddenError:
             pass
     

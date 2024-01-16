@@ -105,12 +105,12 @@ class dangerousSettings(miru.View):
             cur = conn.execute(f"UPDATE settings SET active = 0 WHERE id = {ctx.author.id}")
             conn.commit()
 
-            await ctx.edit_response("Your account has been disabled. You can reactivate it at any time.", components=None)
+            await ctx.edit_response("Your data is no longer being processed. You can unblock processing whenever you want.", components=None)
         else:
             cur = conn.execute(f"UPDATE settings SET active = 1 WHERE id = {ctx.author.id}")
             conn.commit()
 
-            await ctx.edit_response("Your account has been reactivated!", components=None)
+            await ctx.edit_response("Welcome back!", components=None)
 
 class customBgHandler(miru.Modal):
     imageUrl = miru.TextInput(label="Image URL", style=hikari.TextInputStyle.PARAGRAPH, required=True, placeholder="The link to your custom quote background")
@@ -198,12 +198,12 @@ class settingsView(miru.View):
             view = dangerousSettings(timeout=30)
 
             if not userData[1]:
-                view.disable.label = "Unblock quotes"
+                view.disable.label = "Unblock processing"
                 view.disable.style = hikari.ButtonStyle.PRIMARY
 
             view.mainSettings = message
 
-            dangerMsg = await ctx.respond("### This menu contains all of the dangerous actions, such as blocking quotes, please be careful.\nBlock quotes ➡️ Controls whether people can quote you and your general access to Quoter", flags=hikari.MessageFlag.EPHEMERAL, components=view)
+            dangerMsg = await ctx.respond("This menu contains actions that might stop Quoter from working, please be careful.\nBlock processing ➡️ Prevents your data from being processed by Quoter (other than settings). In layman's terms: it means you can't be quoted.", flags=hikari.MessageFlag.EPHEMERAL, components=view)
 
             await view.start(dangerMsg)
             await view.wait()
