@@ -79,7 +79,7 @@ async def quote(ctx: lightbulb.MessageContext):
             pass
 
     if authorDataTuple[1] == False or targetDataTuple[1] == False:
-        await ctx.respond(hikari.Embed(title=f"Unable to generate quote.", description=f"Either you or {ctx.options.target.author.username} has opted out of quoter.", color=0xFF0000))
+        await ctx.respond(hikari.Embed(title=f"Unable to generate quote.", description=f"Either you or {ctx.options.target.author.username} has opted out of quoter.", color=0xED4245))
         return
 
     

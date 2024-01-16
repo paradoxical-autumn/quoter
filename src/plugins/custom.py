@@ -75,7 +75,7 @@ async def unofficial(ctx: lightbulb.MessageContext):
         await ctx.options.user.send(f"# Yikes!\n{ctx.author.username} just custom quoted you in {guild.name}!\nApparently you said \"{ctx.options.text}\"\n*(You have recieved this alert as you have DM On Quote enabled)*")
 
     if authorDataTuple[1] == False or targetDataTuple[1] == False:
-        await ctx.respond(hikari.Embed(title=f"Unable to generate quote.", description=f"Either you or {ctx.options.user.username} has opted out of quoter.", color=0xFF0000))
+        await ctx.respond(hikari.Embed(title=f"Unable to generate quote.", description=f"Either you or {ctx.options.user.username} has opted out of quoter.", color=0xED4245))
         return
     
     if ctx.options.user.is_bot:
