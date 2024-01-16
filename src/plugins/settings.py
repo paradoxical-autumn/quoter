@@ -74,7 +74,7 @@ class generalSettings(miru.View):
             await ctx.edit_response("Disabled DM On Quote", components=self)
 
 class dangerousSettings(miru.View):
-    @miru.button(label="Block quotes", style=hikari.ButtonStyle.SECONDARY)
+    @miru.button(label="Block processing", style=hikari.ButtonStyle.SECONDARY)
     async def disable(self, button: miru.Button, ctx: miru.ViewContext):
         self.mainSettings: hikari.Message
 
