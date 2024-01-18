@@ -240,7 +240,6 @@ async def adminTools(event: hikari.MessageCreateEvent):
                     except lightbulb.errors.ExtensionNotLoaded:
                         await event.message.respond("that extension isn't installed.")
                 else:
-                    await event.message.respond("error: unknown command.")
                     return
             except IndexError:
                 pass
