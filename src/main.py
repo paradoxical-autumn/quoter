@@ -181,7 +181,10 @@ async def adminTools(event: hikari.MessageCreateEvent):
                     elif splitMessage[2].lower() == "reload":
                         activityCycle = []
 
-                        for message in RAW_MESSAGES:
+                        with open("cfgs/messages.json", "r") as fp:
+                            raw_status_msgs = json.load(fp)
+
+                        for message in raw_status_msgs:
                             splitMsg = message.split("//")
                             activityCycle.append([ACTIVITY_ENUMS[splitMsg[0]], splitMsg[1]])
 
@@ -285,12 +288,12 @@ async def about(ctx: lightbulb.context.SlashContext):
     await ctx.respond(aboutEmbedData)
 
 with open("cfgs/messages.json", "r") as fp:
-    RAW_MESSAGES = json.load(fp)
+    raw_status_msgs = json.load(fp)
 
 global activityCycle
 activityCycle = []
 
-for message in RAW_MESSAGES:
+for message in raw_status_msgs:
     splitMsg = message.split("//")
     activityCycle.append([ACTIVITY_ENUMS[splitMsg[0]], splitMsg[1]])
 
