@@ -2,9 +2,10 @@
 
 ## Supported Branches
 
-| Branch  | Supported          |
-| ------- | ------------------ |
-| MAIN    | :white_check_mark: |
+| Branch   | Supported          |
+| -------- | ------------------ |
+| MAIN     | :white_check_mark: |
+| UNTESTED | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
