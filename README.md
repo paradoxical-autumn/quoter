@@ -1,5 +1,8 @@
-<h1 align="center">Quoter</h1>
+<h1 align="center">Quoter (untested branch)</h1>
 <p align="center"><i>a stupid discord bot.</i></p>
+
+## Untested version
+This branch contains the code that I haven't had time to test but needed to back up somewhere. Do not expect everything to work.
 
 ## About
 Quoter is a Discord bot that allows for users to make visual quotes out of images, similar to those you can get by searching for "motivational quotes" on the internet.
