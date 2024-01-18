@@ -16,7 +16,7 @@ class sdCheck(miru.View):
     async def reallySelfDestructFrFrOng(self, button: miru.Button, ctx: miru.ViewContext):
         if str(ctx.author.id) == "730089700139991060":
             await ctx.respond("okay. killing all bot threads. i hope you know what you're doing.")
-            asyncio.sleep(7)
+            await asyncio.sleep(7)
             sys.exit()
         else:
             await ctx.respond("error 403: unauthorised", flags=hikari.MessageFlag.EPHEMERAL)
