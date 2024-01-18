@@ -4,6 +4,9 @@
 ## About
 Quoter is a Discord bot that allows for users to make visual quotes out of images, similar to those you can get by searching for "motivational quotes" on the internet.
 
+### Development branch
+This branch contains the code that I've worked on but haven't tested. Don't expect the code there to work.
+
 ## A comment about this bot
 I'd prefer it if you just added [my version](https://discord.com/oauth2/authorize?client_id=1034045810993803325&permissions=274877959168&scope=applications.commands%20bot) of the bot to your servers, but if it goes down or if you just REALLLYYYY want a self hosted instance, I've released this code for ya.
 
