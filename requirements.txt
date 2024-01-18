@@ -1,6 +1,6 @@
 hikari
 hikari-lightbulb
-hikari-miru
+hikari-miru==3.4.0
 Pillow
 python-dotenv
 imagetext_py
