@@ -156,7 +156,7 @@ async def quote(ctx: lightbulb.MessageContext):
             layer2 = layer2.convert("RGBA")
         except Exception as err:
             try:
-                await ctx.options.target.author.send("# error\nyour custom background isn't formatted right lmao. you're gonna get dms like this until you change it.\ncustom backgrounds:\n- SHOULD be 1920 by 1080px but will be resized\n- SHOULD have a transparent region between (0, 0) and (1080, 1080) else your avatar wont show up\n- should be dark theme as quote text is white\n\nand finally\n- **be a direct link to an image file, try using \"Copy Link\" after uploading and right clicking on an image uploaded to Discord.**\n\nhere's a link to a [GUIDE](<https://media.discordapp.net/attachments/1139436636808163350/1154823484896190495/image.png>) on how to make custom quotes and here's the [default background](<https://media.discordapp.net/attachments/1139436636808163350/1154823519666974770/grad.png>)")
+                await ctx.options.target.author.send("# error\nyour custom background isn't formatted right lmao. you're gonna get dms like this until you change it.\ncustom backgrounds:\n- SHOULD be 1920 by 1080px but will be resized\n- SHOULD have a transparent region between (0, 0) and (1080, 1080) else your avatar wont show up\n- should be dark theme as quote text is white\n\nand finally\n- **be a direct link to an image file.** also, images uploaded to Discord no longer work as custom backgrounds.\n\nAlso, custom backgrounds were deprecated ages ago so it's rare how you still have access to them.")
             except hikari.ForbiddenError:
                 pass
             layer2 = gradBg
