@@ -279,7 +279,7 @@ async def about(ctx: lightbulb.context.SlashContext):
     global build
 
     aboutEmbedData = hikari.Embed(title="About Quoter",
-                                  description=f"© [paradox](https://github.com/paradoxical-autumn) 2024\n*UGC is not moderated.*",
+                                  description=f"made by [paradox](https://github.com/paradoxical-autumn)\n*UGC is not moderated.*",
                                   color=0xFF6D00)
     aboutEmbedData.add_field(name="Useful links", value=f"[Invite link](https://discord.com/oauth2/authorize?client_id=1034045810993803325)\n[Quoter's Website](https://qtr.its-autumn.xyz/#)\n[GitHub repo](https://github.com/paradoxical-autumn/quoter)", inline=True)
     aboutEmbedData.add_field(name="Debugging information", value=f"Build: {build}\nInstance started <t:{INSANCE_START_TIME}:R>\nModules rebooted <t:{last_module_reboot}:R>", inline=True)
