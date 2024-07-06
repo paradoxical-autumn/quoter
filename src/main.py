@@ -214,7 +214,7 @@ async def adminTools(event: hikari.MessageCreateEvent):
                     except AttributeError:
                         await event.message.respond("reply to a message to delete it.")
                 elif splitMessage[1].lower() == "help":
-                    await event.message.respond("# admin tools help\n## setting the status\n`<status|broadcast> <playing|watching|listening|custom|reset> [text]>`\nsets the status message until the command is run again or `reset` is put as the status\n\n## deleting a response\n-> REPLY\n`delete`\ndeletes a message by quoter.\n## reloading extensions\n`<reboot|reload>`\nreloads all modules (everything except QTR_CORE)\n## installing/uninstalling extensions\n`<install|uninstall> <extension>`\nadds or removes an extension from the bot.")
+                    await event.message.respond("# admin tools help\n## setting the status\n`<status|broadcast> <playing|watching|listening|custom|reset|reload> [text]`\nsets the status message until the command is run again or `reset` is put as the status mode. `reload` is used to reload the `messages.json` file.\n\n## deleting a response\n-> REPLY\n`delete`\ndeletes a message by quoter.\n## reloading extensions\n`<reboot|reload>`\nreloads all modules (everything except QTR_CORE)\n## installing/uninstalling extensions\n`<install|uninstall> <extension>`\nadds or removes an extension from the bot.")
                 
                 elif splitMessage[1].lower() == "reboot" or splitMessage[1].lower() == "reload":
                     for _ in bot.extensions:
