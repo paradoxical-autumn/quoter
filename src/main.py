@@ -146,6 +146,11 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
                         "name": "interaction information",
                         "inline": True,
                         "value": f"{event.context.interaction.command_name=}\n\n{event.context.interaction.command_type=}"
+                    },
+                    {
+                        "name": "user information",
+                        "inline": True,
+                        "value": f"{event.context.author.username=}\n{event.context.author.id=}"
                     }
                 ]
             }
