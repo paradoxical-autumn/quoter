@@ -74,7 +74,7 @@ async def quote(ctx: lightbulb.MessageContext):
     if targetDataTuple[4]:
         guild = ctx.get_guild()
         try:
-            await ctx.options.target.author.send(f"# Yikes!\n{ctx.author.username} just quoted you in {guild.name}!\nYou said \"{ctx.options.target.content}\"\n*(You have recieved this alert as you have DM On Quote enabled)*")
+            await ctx.options.target.author.send(f"# Yikes!\n{ctx.author.username} just quoted you in <#{ctx.channel_id}>!\nYou said \"{ctx.options.target.content}\"\n*(You have recieved this alert as you have DM On Quote enabled)*")
         except hikari.ForbiddenError:
             pass
 
