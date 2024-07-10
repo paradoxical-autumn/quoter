@@ -57,7 +57,7 @@ global last_module_reboot
 last_module_reboot = math.floor(time.time())
 
 global build
-build = "v2024.0710.0"
+build = "v2024.0710.1"
 
 dotenv.load_dotenv()
 BOT_TOKEN = os.environ["BOT_TOKEN"]
