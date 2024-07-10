@@ -73,6 +73,46 @@ cooldownList = ["HEY!", "Wait up!", ">:C", "a.", ":ice_cube:", ":fire: :fire: :f
 permissionErrorFlavourText = ["nope.", "I don't think I can do that...", ":nerd:", ":warning:", "oi", "The law requires I answer no.", "`permissionError`", "nuh uh."]
 errorFlavourText = ["i didn't touch nothing!", "deleting system 32...", "umm uhh", "im so silly!", "oops...", "i think i dropped something.", "[500] internal server error"]
 
+class bugReportModal(miru.Modal):
+    info = miru.TextInput(label="What we're you doing when the error happened?", style=hikari.TextInputStyle.PARAGRAPH, required=True, placeholder="Something like: \"i was just using the bot ;-;\"")
+    contact = miru.TextInput(label="Are we allowed to contact you?", style=hikari.TextInputStyle.SHORT, required=True, placeholder="yeah")
+
+    async def callback(self, ctx: miru.ModalContext) -> None:
+        embedData = {}
+
+        if ctx.author.avatar_url:
+            aviUrl = str(ctx.author.avatar_url)
+        else:
+            aviUrl = "https://cdn.discordapp.com/embed/avatars/0.png"
+        
+        embedData["embeds"] = [
+            {
+                "title": f"New bug report",
+                "description": f"from {ctx.author.username}",
+                "fields": [
+                    {
+                        "name": "explanation",
+                        "value": self.info.value
+                    },
+                    {
+                        "name": "contact allowed?",
+                        "value": self.contact.value
+                    }
+                ]
+            }
+        ]
+
+        requests.post(os.environ["ERROR_WEBHOOK"], json=embedData)
+
+        await ctx.respond("sent, thanks for the report!")
+
+class bugReportView(miru.View):
+    @miru.button(label="Send bug report", style=hikari.ButtonStyle.PRIMARY)
+    async def openModal(self, button: miru.Button, ctx: miru.ViewContext):
+        modal = bugReportModal("Quoter Bug Report")
+        await ctx.respond_with_modal(modal)
+        await ctx.edit_response("This menu has timed out.")
+
 # error handler
 @bot.listen(lightbulb.CommandErrorEvent)
 async def on_error(event: lightbulb.CommandErrorEvent) -> None:
@@ -111,8 +151,13 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
 
         requests.post(os.environ["ERROR_WEBHOOK"], json=errorEmbedData)
         # await event.context.respond(f"Something went wrong during invocation of command `{event.context.command.name}`.")
-        await event.context.respond(hikari.Embed(title=random.choice(errorFlavourText), description=f"An error occurred.", color=0xED4245))
+
+        view = bugReportView()
+        message = await event.context.respond(hikari.Embed(title=random.choice(errorFlavourText), description=f"An error occurred.", color=0xED4245), components=view)
+        await view.start(message)
         logging.fatal(f"{event.exception.original}")
+
+        await view.wait()
 
     # Unwrap the exception to get the original cause
     exception = event.exception.__cause__ or event.exception
