@@ -86,14 +86,26 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
 
         errorEmbedData["embeds"] = [
             {
-                "description": f"{event.exception.original}",
+                "description": f"`{type(event.exception.original)}` -> {event.exception.original}",
                 "title": "quoter broke (again).",
                 "color": 0xED4245,
                 "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f%z'),
                 "footer": {
                     "text": f"{event.context.author.global_name} // @{event.context.author.username}",
                     "icon_url": aviUrl
-                }
+                },
+                "fields": [
+                    {
+                        "name": "command information",
+                        "inline": True,
+                        "value": f"{event.context.command.name=}"
+                    },
+                    {
+                        "name": "interaction information",
+                        "inline": True,
+                        "value": f"{event.context.interaction.command_name=}\n\n{event.context.interaction.command_type=}"
+                    }
+                ]
             }
         ]
 

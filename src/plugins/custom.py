@@ -184,7 +184,7 @@ async def unofficial(ctx: lightbulb.MessageContext):
     drawingCanvas = Image.new("RGBA", final2.size)
 
     # load fonts.
-    imgtxt.FontDB.SetDefaultEmojiOptions(imgtxt.EmojiOptions(parse_discord_emojis=True, source=imgtxt.EmojiSource.Twemoji))
+    imgtxt.FontDB.SetDefaultEmojiOptions(imgtxt.EmojiOptions(parse_discord_emojis=True))
     quoterFont = imgtxt.FontDB.Query("NotoSans-Regular NotoSansJP-Regular NotoSansSC-Regular NotoSansTC-Regular NotoSansHK-Regular NotoSansKR-Regular")
     #\n~ {nick}, {ctx.options.target.timestamp.strftime('%Y')}"
     wrapped_qtr = imgtxt.text_wrap(f"{quotestr}", QUOTE_PXLS, QUOTE_SIZE, quoterFont, True, imgtxt.WrapStyle.Word)

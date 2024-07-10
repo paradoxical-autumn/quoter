@@ -40,6 +40,7 @@ def unload(bot: lightbulb.BotApp):
 @lightbulb.command('Quote', 'Someone say something that\'s too perfect NOT to quote?', auto_defer=True)
 @lightbulb.implements(lightbulb.MessageCommand)
 async def quote(ctx: lightbulb.MessageContext):
+    raise EOFError("Not implimented")
     conn = sql.connect(r"cfgs/qtr.db")
 
     conn.commit()
@@ -204,7 +205,7 @@ async def quote(ctx: lightbulb.MessageContext):
         quotestr = quotestr.replace(ctx.options.target.user_mentions[i].mention, f"@{ctx.options.target.user_mentions[i].username}")
 
     # load font.
-    imgtxt.FontDB.SetDefaultEmojiOptions(imgtxt.EmojiOptions(parse_discord_emojis=True, source=imgtxt.EmojiSource.Twemoji))
+    imgtxt.FontDB.SetDefaultEmojiOptions(imgtxt.EmojiOptions(parse_discord_emojis=True))
     quoterFont = imgtxt.FontDB.Query("NotoSans-Regular NotoSansJP-Regular NotoSansSC-Regular NotoSansTC-Regular NotoSansHK-Regular NotoSansKR-Regular")
     #\n~ {nick}, {ctx.options.target.timestamp.strftime('%Y')}"
     wrapped_qtr = imgtxt.text_wrap(f"{quotestr}", QUOTE_PXLS, QUOTE_SIZE, quoterFont, True, imgtxt.WrapStyle.Word)
