@@ -111,7 +111,9 @@ class bugReportView(miru.View):
     async def openModal(self, button: miru.Button, ctx: miru.ViewContext):
         modal = bugReportModal("Quoter Bug Report")
         await ctx.respond_with_modal(modal)
-        await ctx.edit_response("This menu has timed out.")
+        button.disabled = True
+        button.label = "Bug report sent"
+        await ctx.edit_response(components=self)
 
 # error handler
 @bot.listen(lightbulb.CommandErrorEvent)

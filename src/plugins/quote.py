@@ -40,7 +40,6 @@ def unload(bot: lightbulb.BotApp):
 @lightbulb.command('Quote', 'Someone say something that\'s too perfect NOT to quote?', auto_defer=True)
 @lightbulb.implements(lightbulb.MessageCommand)
 async def quote(ctx: lightbulb.MessageContext):
-    raise EOFError("Not implimented")
     conn = sql.connect(r"cfgs/qtr.db")
 
     conn.commit()
