@@ -9,11 +9,7 @@ plugin = lightbulb.Plugin("qtr_SETTINGS_V2", include_datastore=True)
 
 notWindows = True
 
-def load(bot: lightbulb.BotApp):
-    global qtRatios
-    with open("cfgs/qtMsgs.json", "r") as fp:
-        qtRatios = json.load(fp)
-    
+def load(bot: lightbulb.BotApp):   
     try:
         bot.add_plugin(plugin)
     except lightbulb.CommandAlreadyExists as err:
@@ -27,11 +23,35 @@ def unload(bot: lightbulb.BotApp):
     bot.remove_plugin(plugin)
 
 class MainScreen(menu.Screen):
+    def __init__(self, menu: menu.Menu) -> None:
+        super().__init__(menu)
+        # grab the user data
+        conn = sql.connect(r"cfgs/qtr.db")
+        conn.commit()
+
+        cur = conn.execute(f"SELECT * FROM settings WHERE settings.id = {menu.active_user.id}")
+        author_data = cur.fetchall()
+
+        if not author_data:
+            # it doesnt exist. we need to manually init it.
+            global defaultSettings
+            _ = conn.execute(defaultSettings, (int(menu.active_user.id)))
+            conn.commit()
+            cur = conn.execute(f"SELECT * FROM settings WHERE settings.id = {menu.active_user.id}")
+            author_data = cur.fetchall()
+
+        # ALWAYS close ur database connections :3
+        conn.close()
+
+        # we have the user data!
+        self.author_data_tuple = author_data[0]
+        self.front_end_data = f"- Active: {'✅' if self.author_data_tuple[1] == 1 else '❌'}\n- Background: {self.author_data_tuple[3]}\n- DM On Quote: {'✅' if self.author_data_tuple[4] == 1 else '❌'}"
+
     async def build_content(self) -> menu.ScreenContent:
         return menu.ScreenContent(
             embed=hikari.Embed(
-                title="Welcome to the new settings menu!",
-                description="wah."
+                title="Quoter settings",
+                description=f"{self.front_end_data}"
             )
         )
 
@@ -97,6 +117,7 @@ async def some_slash_command(ctx: lightbulb.SlashContext) -> None:
     client: miru.Client = ctx.app.d.miru
 
     my_menu = menu.Menu()  # Create a new Menu
+    my_menu.active_user = ctx.author
     # You may need to defer if building your first page takes more than 3 seconds
     builder = await my_menu.build_response_async(client, MainScreen(my_menu))
     await builder.create_initial_response(ctx.interaction)
