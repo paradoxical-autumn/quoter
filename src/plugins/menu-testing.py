@@ -24,19 +24,21 @@ def unload(bot: lightbulb.BotApp):
 class MainScreen(menu.Screen):
     def __init__(self, menu: menu.Menu) -> None:
         super().__init__(menu)
-        # grab the user data
+        self.active_user = menu.active_user
+
+    async def build_content(self) -> menu.ScreenContent:
         conn = sql.connect(r"cfgs/qtr.db")
         conn.commit()
 
-        cur = conn.execute(f"SELECT * FROM settings WHERE settings.id = {menu.active_user.id}")
+        cur = conn.execute(f"SELECT * FROM settings WHERE settings.id = {self.active_user.id}")
         author_data = cur.fetchall()
 
         if not author_data:
             # it doesnt exist. we need to manually init it.
             global defaultSettings
-            _ = conn.execute(defaultSettings, (int(menu.active_user.id)))
+            _ = conn.execute(defaultSettings, (int(self.active_user.id)))
             conn.commit()
-            cur = conn.execute(f"SELECT * FROM settings WHERE settings.id = {menu.active_user.id}")
+            cur = conn.execute(f"SELECT * FROM settings WHERE settings.id = {self.active_user.id}")
             author_data = cur.fetchall()
 
         # ALWAYS close ur database connections :3
@@ -44,51 +46,37 @@ class MainScreen(menu.Screen):
 
         # we have the user data!
         self.author_data_tuple = author_data[0]
-        self.front_end_data = f"- Active: {'✅' if self.author_data_tuple[1] == 1 else '❌'}\n- Background: {self.author_data_tuple[3]}\n- DM On Quote: {'✅' if self.author_data_tuple[4] == 1 else '❌'}"
+        front_end_data = f"- Active: {'✅' if self.author_data_tuple[1] == 1 else '❌'}\n- Background: {self.author_data_tuple[3]}\n- DM On Quote: {'✅' if self.author_data_tuple[4] == 1 else '❌'}"
 
-    async def build_content(self) -> menu.ScreenContent:
         return menu.ScreenContent(
             embed=hikari.Embed(
                 title="Quoter settings",
-                description=f"{self.front_end_data}"
+                description=f"{front_end_data}"
             )
         )
 
-    @menu.button(label="page1")
+    @menu.button(label="General settings")
     async def pageOne(self, ctx: miru.ViewContext, button: menu.ScreenButton) -> None:
-        await self.menu.push(screenOne(self.menu))
-    
-    @menu.button(label="screen two")
-    async def pageTwo(self, ctx: miru.ViewContext, button: menu.ScreenButton) -> None:
-        await self.menu.push(screenTwo(self.menu))
+        await self.menu.push(GeneralSettings(self.menu, self.author_data_tuple))
 
-class screenOne(menu.Screen):
-    async def build_content(self) -> menu.ScreenContent:
-        return menu.ScreenContent(
-            embed=hikari.Embed(
-                title="Screen one",
-                description="Welcome to screen one!"
-            )
-        )
-    
-    @menu.button(label="back")
-    async def back(self, ctx: miru.ViewContext, button: menu.ScreenButton) -> None:
-        await self.menu.pop()
-    
-    @menu.button(label="YIPPEE", style=hikari.ButtonStyle.SUCCESS)
-    async def yipyap(self, ctx: miru.ViewContext, button: menu.ScreenButton) -> None:
-        await ctx.respond("hoi guys.")
-
-class screenTwo(menu.Screen):
-    def __init__(self, menu: menu.Menu) -> None:
+class GeneralSettings(menu.Screen):
+    def __init__(self, menu: menu.Menu, author_dat: tuple) -> None:
         super().__init__(menu)
-        self.is_enabled = False
-    
+        dmoq_button: menu.ScreenButton = self.children[1]
+        self.author_dat = author_dat
+        
+        if self.author_dat[4] == 1:
+            dmoq_button.style = hikari.ButtonStyle.SUCCESS
+            dmoq_button.emoji = "✅"
+        elif self.author_dat[4] == 0:
+            dmoq_button.style = hikari.ButtonStyle.SECONDARY
+            dmoq_button.emoji = "❌"
+
     async def build_content(self) -> menu.ScreenContent:
         return menu.ScreenContent(
             embed=hikari.Embed(
-                title="screen two",
-                description="WOAH THERE'S A SECOND?"
+                title="General settings",
+                description="General settings for general purposes."
             )
         )
     
@@ -96,16 +84,20 @@ class screenTwo(menu.Screen):
     async def back(self, ctx: miru.ViewContext, button: menu.ScreenButton) -> None:
         await self.menu.pop()
     
-    @menu.button(label="enable", style=hikari.ButtonStyle.DANGER)
-    async def enable(self, ctx: miru.ViewContext, button: menu.ScreenButton) -> None:
-        self.is_enabled = not self.is_enabled
+    @menu.button(label="DM On Quote", style=hikari.ButtonStyle.SECONDARY)
+    async def yipyap(self, ctx: miru.ViewContext, button: menu.ScreenButton) -> None:
+        conn = sql.connect(r"cfgs/qtr.db")
+        conn.commit()
+        cur = conn.execute(f"UPDATE settings SET dmOnQuote = {1 - self.author_dat[4]} WHERE settings.id = {ctx.author.id}")
+        conn.commit()
+        conn.close()
 
-        if self.is_enabled:
-            button.style = hikari.ButtonStyle.SUCCESS
-            button.label = "disable"
+        if (1 - self.author_dat[4]) == 0:
+            button.style = hikari.ButtonStyle.SECONDARY
+            button.emoji = "❌"
         else:
-            button.style = hikari.ButtonStyle.DANGER
-            button.label = "enable"
+            button.style = hikari.ButtonStyle.SUCCESS
+            button.emoji = "✅"
         
         await self.menu.update_message()
 
