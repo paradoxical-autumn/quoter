@@ -1,6 +1,5 @@
-from typing import Coroutine
-import lightbulb, os, json, hikari, random, logging
-from PIL import Image
+import hikari.events.interaction_events
+import lightbulb, hikari, random, logging
 import sqlite3 as sql
 import hikari, miru
 from miru.ext import menu
@@ -111,7 +110,7 @@ class screenTwo(menu.Screen):
         await self.menu.update_message()
 
 @plugin.command
-@lightbulb.command("menu", "demo menu for debugging", auto_defer=False)
+@lightbulb.command("menu", "demo menu for debugging", auto_defer=True, ephemeral=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def some_slash_command(ctx: lightbulb.SlashContext) -> None:
     client: miru.Client = ctx.app.d.miru
@@ -119,8 +118,8 @@ async def some_slash_command(ctx: lightbulb.SlashContext) -> None:
     my_menu = menu.Menu()  # Create a new Menu
     my_menu.active_user = ctx.author
     # You may need to defer if building your first page takes more than 3 seconds
-    builder = await my_menu.build_response_async(client, MainScreen(my_menu))
-    await builder.create_initial_response(ctx.interaction)
+    builder = await my_menu.build_response_async(client, MainScreen(my_menu), ephemeral=True)
+    await builder.create_followup(ctx.interaction)
     # Or if using a prefix command:
     # await builder.send_to_channel(ctx.channel_id)
 
