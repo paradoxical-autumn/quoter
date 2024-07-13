@@ -64,7 +64,7 @@ BOT_TOKEN = os.environ["BOT_TOKEN"]
 
 # create the bot application
 bot = lightbulb.BotApp(BOT_TOKEN, allow_color=False)
-bot.d.miru = miru.Client(bot)
+bot.d.miru = miru.Client(bot, ignore_unknown_interactions=True)
 imgtxt.FontDB.SetDefaultEmojiOptions(imgtxt.EmojiOptions(parse_discord_emojis=True))
 imgtxt.FontDB.LoadFromDir("./defaultAssets/fonts")
 
@@ -113,7 +113,13 @@ class bugReportView(miru.View):
         await ctx.respond_with_modal(modal)
         button.disabled = True
         button.label = "Bug report sent"
+        button.style=hikari.ButtonStyle.SECONDARY
         await ctx.edit_response(components=self)
+    
+    async def on_timeout(self) -> None:
+        self.children[0].disabled = True
+        res_prox: lightbulb.context.base.ResponseProxy = self.error_message
+        await res_prox.edit(components=self)
 
 # error handler
 @bot.listen(lightbulb.CommandErrorEvent)
@@ -160,11 +166,10 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         # await event.context.respond(f"Something went wrong during invocation of command `{event.context.command.name}`.")
 
         view = bugReportView()
-        await event.context.respond(hikari.Embed(title=random.choice(errorFlavourText), description=f"An error occurred.", color=0xED4245), components=view)
+        new_msg = await event.context.respond(hikari.Embed(title=random.choice(errorFlavourText), description=f"An error occurred.", color=0xED4245), components=view)
+        view.error_message = new_msg
         event.app.d.miru.start_view(view)
         logging.fatal(f"{event.exception.original}")
-
-        await view.wait()
 
     # Unwrap the exception to get the original cause
     exception = event.exception.__cause__ or event.exception
