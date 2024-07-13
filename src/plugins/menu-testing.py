@@ -64,11 +64,13 @@ class GeneralSettings(menu.Screen):
         super().__init__(menu)
         dmoq_button: menu.ScreenButton = self.children[1]
         self.author_dat = author_dat
+
+        self.cached_dmoq = self.author_dat[4]
         
-        if self.author_dat[4] == 1:
+        if self.cached_dmoq == 1:
             dmoq_button.style = hikari.ButtonStyle.SUCCESS
             dmoq_button.emoji = "✅"
-        elif self.author_dat[4] == 0:
+        elif self.cached_dmoq == 0:
             dmoq_button.style = hikari.ButtonStyle.SECONDARY
             dmoq_button.emoji = "❌"
 
@@ -88,16 +90,18 @@ class GeneralSettings(menu.Screen):
     async def yipyap(self, ctx: miru.ViewContext, button: menu.ScreenButton) -> None:
         conn = sql.connect(r"cfgs/qtr.db")
         conn.commit()
-        cur = conn.execute(f"UPDATE settings SET dmOnQuote = {1 - self.author_dat[4]} WHERE settings.id = {ctx.author.id}")
+        cur = conn.execute(f"UPDATE settings SET dmOnQuote = {1 - self.cached_dmoq} WHERE settings.id = {ctx.author.id}")
         conn.commit()
         conn.close()
 
-        if (1 - self.author_dat[4]) == 0:
+        if (1 - self.cached_dmoq) == 0:
             button.style = hikari.ButtonStyle.SECONDARY
             button.emoji = "❌"
         else:
             button.style = hikari.ButtonStyle.SUCCESS
             button.emoji = "✅"
+        
+        self.cached_dmoq = 1 - self.cached_dmoq
         
         await self.menu.update_message()
 
