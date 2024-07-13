@@ -48,6 +48,9 @@ class MainScreen(menu.Screen):
         self.author_data_tuple = author_data[0]
         front_end_data = f"- Active: {'✅' if self.author_data_tuple[1] == 1 else '❌'}\n- Background: {self.author_data_tuple[3]}\n- DM On Quote: {'✅' if self.author_data_tuple[4] == 1 else '❌'}"
 
+        if self.author_data_tuple[5] == 0:
+            self.children[1].disabled= True
+
         return menu.ScreenContent(
             embed=hikari.Embed(
                 title="Quoter settings",
@@ -58,6 +61,10 @@ class MainScreen(menu.Screen):
     @menu.button(label="General settings")
     async def pageOne(self, ctx: miru.ViewContext, button: menu.ScreenButton) -> None:
         await self.menu.push(GeneralSettings(self.menu, self.author_data_tuple))
+    
+    @menu.button(label="Background selection")
+    async def backgroundSelection(self, ctx: miru.ViewContext, button: menu.ScreenButton) -> None:
+        await self.menu.push(BackgroundSelection(self.menu, self.author_data_tuple))
 
 class GeneralSettings(menu.Screen):
     def __init__(self, menu: menu.Menu, author_dat: tuple) -> None:
@@ -104,6 +111,22 @@ class GeneralSettings(menu.Screen):
         self.cached_dmoq = 1 - self.cached_dmoq
         
         await self.menu.update_message()
+
+class BackgroundSelection(menu.Screen):
+    def __init__(self, menu: menu.Menu, author_dat: tuple) -> None:
+        super().__init__(menu)
+    
+    async def build_content(self) -> menu.ScreenContent:
+        return menu.ScreenContent(
+            embed=hikari.Embed(
+                title="Choose a background",
+                description="Well, aren't you special! Choose a background."
+            )
+        )
+    
+    @menu.button(label="back")
+    async def back(self, ctx: miru.ViewContext, button: menu.ScreenButton) -> None:
+        await self.menu.pop()
 
 @plugin.command
 @lightbulb.command("menu", "demo menu for debugging", auto_defer=True, ephemeral=True)
