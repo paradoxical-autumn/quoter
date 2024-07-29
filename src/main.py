@@ -1,6 +1,7 @@
 # imports
 from PIL import Image, ImageDraw, ImageFont
 import os
+import hikari.errors
 import requests
 import hikari
 import lightbulb
@@ -158,6 +159,18 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
 
         requests.post(os.environ["ERROR_WEBHOOK"], json=errorEmbedData)
         # await event.context.respond(f"Something went wrong during invocation of command `{event.context.command.name}`.")
+
+        if type(event.exception.original) == type(hikari.errors.ForbiddenError):
+            try:
+                await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 403'd. This is usually a sign of the bot being:\n- Incorrectly configured in the server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
+            except hikari.errors.ForbiddenError:
+                pass
+        
+        if type(event.exception.original) == type(hikari.errors.UnauthorizedError):
+            try:
+                await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 401'd. Maybe try again? If it is still being 401'd, consider filing a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
+            except hikari.errors.ForbiddenError:
+                pass
 
         view = bugReportView()
         message = await event.context.respond(hikari.Embed(title=random.choice(errorFlavourText), description=f"An error occurred.", color=0xED4245), components=view)
