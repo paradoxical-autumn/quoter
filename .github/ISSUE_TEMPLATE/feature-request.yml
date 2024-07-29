@@ -31,3 +31,10 @@ body:
       description: Add any other context about the problem here.
     validations:
       required: false
+  - type: textarea
+    id: reporters
+    attributes:
+      label: Reporters
+      description: Add any usernames / discord handles of reporters here. This is used to credit you in release notes.
+    validations:
+      required: true
