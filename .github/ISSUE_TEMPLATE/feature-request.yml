@@ -32,9 +32,9 @@ body:
     validations:
       required: false
   - type: textarea
-    id: reporters
+    id: requesters
     attributes:
-      label: Reporters
-      description: Add any usernames / discord handles of reporters here. This is used to credit you in release notes.
+      label: Requesters
+      description: Add any usernames / discord handles of requesters here. This is used to credit you in release notes.
     validations:
       required: true
