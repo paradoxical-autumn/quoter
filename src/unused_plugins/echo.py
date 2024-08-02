@@ -1,6 +1,6 @@
 import lightbulb, hikari, miru, logging
 
-plugin = lightbulb.Plugin("echo", include_datastore=True)
+plugin = lightbulb.Plugin("echo")
 
 def load(bot: lightbulb.BotApp):
     try:

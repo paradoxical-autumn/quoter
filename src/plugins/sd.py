@@ -1,6 +1,6 @@
 import lightbulb, logging, hikari, miru, sys, asyncio
 
-plugin = lightbulb.Plugin("self_destruct", include_datastore=True)
+plugin = lightbulb.Plugin("self_destruct")
 
 def load(bot: lightbulb.BotApp):
     try:
@@ -13,7 +13,7 @@ def unload(bot: lightbulb.BotApp):
 
 class sdCheck(miru.View):
     @miru.button(label="Self destruct", style=hikari.ButtonStyle.DANGER)
-    async def reallySelfDestructFrFrOng(self, ctx: miru.ViewContext, button: miru.Button):
+    async def reallySelfDestructFrFrOng(self, button: miru.Button, ctx: miru.ViewContext):
         if str(ctx.author.id) == "730089700139991060":
             await ctx.respond("okay. killing all bot threads. i hope you know what you're doing.")
             await asyncio.sleep(7)
@@ -28,8 +28,8 @@ async def onMessage(event: hikari.MessageCreateEvent):
         if str(event.author_id) == "730089700139991060":
             if event.content == f"{me.mention} sd":
                 view = sdCheck(timeout=30)
-                await event.message.respond("u sure you wanna make the bot self destruct? this action is irreversible.", components=view)
+                msg = await event.message.respond("u sure you wanna make the bot self destruct? this action is irreversible.", components=view)
 
-                event.app.d.miru.start_view(view)
-                #await view.wait()
-                #await msg.edit("component timed out.", components=None)
+                await view.start(msg)
+                await view.wait()
+                await msg.edit("component timed out.", components=None)
