@@ -74,6 +74,18 @@ cooldownList = ["HEY!", "Wait up!", ">:C", "a.", ":ice_cube:", ":fire: :fire: :f
 permissionErrorFlavourText = ["nope.", "I don't think I can do that...", ":nerd:", ":warning:", "oi", "The law requires I answer no.", "`permissionError`", "nuh uh."]
 errorFlavourText = ["i didn't touch nothing!", "deleting system 32...", "umm uhh", "im so silly!", "oops...", "i think i dropped something.", "[500] internal server error"]
 
+errorDefinitions = {
+    type(hikari.errors.ForbiddenError): "It looks like I got 403'd. This is usually a sign of the bot being:\n- Incorrectly configured in the server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report!",
+    type(hikari.errors.UnauthorizedError): "It looks like I got 401'd. Maybe try again? If it is still being 401'd, consider filing a bug report",
+    type(hikari.errors.NotFoundError): "I can't seem to find a core interaction component. Maybe try again?"
+}
+
+dmdErrorDefinitions = {
+    type(hikari.errors.ForbiddenError): "# Sorry!\nIt looks like you recently tried to use a command which was 403'd. This is usually a sign of the bot being:\n- Incorrectly configured in the server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report at <https://github.com/paradoxical-autumn/quoter/issues>",
+    type(hikari.errors.UnauthorizedError): "# Sorry!\nIt looks like you recently tried to use a command which was 401'd. Maybe try again? If it is still being 401'd, consider filing a bug report at <https://github.com/paradoxical-autumn/quoter/issues>",
+    type(hikari.errors.NotFoundError): "# Sorry!\nWhen processing your recent command I was unable to find a core interaction component. Maybe try again?"
+}
+
 class bugReportModal(miru.Modal):
     info = miru.TextInput(label="What we're you doing when the error happened?", style=hikari.TextInputStyle.PARAGRAPH, required=True, placeholder="Something like: \"i was just using the bot ;-;\"")
     contact = miru.TextInput(label="Are we allowed to contact you?", style=hikari.TextInputStyle.SHORT, required=True, placeholder="yeah")
@@ -115,6 +127,11 @@ class bugReportView(miru.View):
         button.disabled = True
         button.label = "Bug report sent"
         await ctx.edit_response(components=self)
+    
+    @miru.button(label="Create bug report", style=hikari.ButtonStyle.LINK, url="https://github.com/paradoxical-autumn/quoter/issues")
+    async def bug_report(self, button: miru.Button, ctx: miru.ViewContext):
+        # URL buttons have no callback.
+        pass
 
 # error handler
 @bot.listen(lightbulb.CommandErrorEvent)
@@ -160,20 +177,21 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         requests.post(os.environ["ERROR_WEBHOOK"], json=errorEmbedData)
         # await event.context.respond(f"Something went wrong during invocation of command `{event.context.command.name}`.")
 
-        if type(event.exception.original) == type(hikari.errors.ForbiddenError):
+        if type(event.exception.original) in dmdErrorDefinitions:
             try:
-                await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 403'd. This is usually a sign of the bot being:\n- Incorrectly configured in the server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
+                await event.context.user.send(dmdErrorDefinitions[type(event.exception.original)])
             except hikari.errors.ForbiddenError:
                 pass
         
-        if type(event.exception.original) == type(hikari.errors.UnauthorizedError):
-            try:
-                await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 401'd. Maybe try again? If it is still being 401'd, consider filing a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
-            except hikari.errors.ForbiddenError:
-                pass
-
+        
         view = bugReportView()
-        message = await event.context.respond(hikari.Embed(title=random.choice(errorFlavourText), description=f"An error occurred.", color=0xED4245), components=view)
+        message: hikari.Message
+
+        if type(event.exception.original) in errorDefinitions:
+            message = await event.context.respond(hikari.Embed(title=random.choice(errorFlavourText), description=errorDefinitions[type(event.exception.original)], color=0xED4245), components=view)
+        else:
+            message = await event.context.respond(hikari.Embed(title=random.choice(errorFlavourText), description=f"An error occurred.", color=0xED4245), components=view)
+        
         await view.start(message)
         logging.fatal(f"{event.exception.original}")
 
