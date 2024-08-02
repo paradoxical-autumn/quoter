@@ -1,6 +1,6 @@
 import lightbulb, logging
 
-plugin = lightbulb.Plugin("qtr_TMP")
+plugin = lightbulb.Plugin("qtr_TMP", include_datastore=True)
 
 def load(bot: lightbulb.BotApp):
     print("yo we're installed!!")

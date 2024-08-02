@@ -3,7 +3,7 @@ from PIL import Image
 import sqlite3 as sql
 import hikari, miru
 
-plugin = lightbulb.Plugin("qtr_SETTINGS")
+plugin = lightbulb.Plugin("qtr_SETTINGS", include_datastore=True)
 
 notWindows = True
 qtr_COOLDOWN = lightbulb.buckets.UserBucket
@@ -27,7 +27,7 @@ def unload(bot: lightbulb.BotApp):
 
 class generalSettings(miru.View):
     @miru.button(label="DM On Quote", style=hikari.ButtonStyle.SECONDARY)
-    async def toggleDMOnQ(self, button: miru.Button, ctx: miru.ViewContext):
+    async def toggleDMOnQ(self, ctx: miru.ViewContext, button: miru.Button):
         conn = sql.connect(r"cfgs/qtr.db")
 
         conn.commit()
@@ -75,7 +75,7 @@ class generalSettings(miru.View):
 
 class dangerousSettings(miru.View):
     @miru.button(label="Block processing", style=hikari.ButtonStyle.SECONDARY)
-    async def disable(self, button: miru.Button, ctx: miru.ViewContext):
+    async def disable(self, ctx: miru.ViewContext, button: miru.Button):
         self.mainSettings: hikari.Message
 
         await self.mainSettings.edit("This menu is no longer available.", components=None)
@@ -143,11 +143,11 @@ class settingsView(miru.View):
             else:
                 view.toggleDMOnQ.style = hikari.ButtonStyle.DANGER
                 view.toggleDMOnQ.emoji = "✖️"
-            generalMsg = await ctx.respond("General settings", flags=hikari.MessageFlag.EPHEMERAL, components=view)
+            await ctx.respond("General settings", flags=hikari.MessageFlag.EPHEMERAL, components=view)
 
-            await view.start(generalMsg)
-            await view.wait()
-            await generalMsg.edit("This object has timed out.", components=None)
+            plugin.d.miru.start_view(view)
+            #await view.wait()
+            #await generalMsg.edit("This object has timed out.", components=None)
             
         elif select.values[0] == "custom":
             if userData[5] == 0:
@@ -187,13 +187,13 @@ class settingsView(miru.View):
 
                 view = customisationPage(timeout=30)
 
-                bgMessage = await ctx.respond("Select a background!", flags=hikari.MessageFlag.EPHEMERAL, components=view)
+                await ctx.respond("Select a background!", flags=hikari.MessageFlag.EPHEMERAL, components=view)
 
-                await view.start(bgMessage)
+                plugin.d.miru.start_view(view)
 
-                await view.wait()
+                #await view.wait()
 
-                await bgMessage.edit("This object has timed out.", components=None)
+                #await bgMessage.edit("This object has timed out.", components=None)
         elif select.values[0] == "danger":
             view = dangerousSettings(timeout=30)
 
@@ -203,11 +203,11 @@ class settingsView(miru.View):
 
             view.mainSettings = message
 
-            dangerMsg = await ctx.respond("This menu contains actions that might stop Quoter from working, please be careful.\nBlock processing ➡️ Prevents your data from being processed by Quoter (other than settings). In layman's terms: it means you can't be quoted.", flags=hikari.MessageFlag.EPHEMERAL, components=view)
+            await ctx.respond("This menu contains actions that might stop Quoter from working, please be careful.\nBlock processing ➡️ Prevents your data from being processed by Quoter (other than settings). In layman's terms: it means you can't be quoted.", flags=hikari.MessageFlag.EPHEMERAL, components=view)
 
-            await view.start(dangerMsg)
-            await view.wait()
-            await dangerMsg.edit("This object has timed out.", components=None)
+            plugin.d.miru.start_view(view)
+            #await view.wait()
+            #await dangerMsg.edit("This object has timed out.", components=None)
         else:
             await ctx.respond(f"Unknown page??\n{select.values[0]} isn't a valid page, please report this!", flags=hikari.MessageFlag.EPHEMERAL)
 
@@ -252,8 +252,8 @@ async def settings(ctx: lightbulb.SlashContext):
 
     message = await ctx.respond(f"# Welcome to the Quoter settings panel!\nAccount overview:\n- Active account: {frontendUserData[1]}\n- Banned account: {frontendUserData[2]}\n- Background: {frontendUserData[3]}\n- Send a DM when someone quotes you: {frontendUserData[4]}\n- Unlocked backgrounds: `{frontendUserData[5]}`", components=view)
     view.response = message
-    await view.start(message)
+    ctx.app.d.miru.start_view(view)
 
-    await view.wait()
+    #await view.wait()
 
-    await message.edit("This settings menu has timed out.", components=None)
+    #await message.edit("This settings menu has timed out.", components=None)
