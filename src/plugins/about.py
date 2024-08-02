@@ -19,7 +19,7 @@ async def about(ctx: lightbulb.context.SlashContext):
     aboutEmbedData = hikari.Embed(title="About Quoter",
                                   description=f"made by [paradox](https://github.com/paradoxical-autumn)\n*UGC is not moderated.*",
                                   color=0xFF6D00)
-    aboutEmbedData.add_field(name="Useful links", value=f"[Invite link](https://discord.com/oauth2/authorize?client_id=1034045810993803325)\n[Quoter's Website](https://qtr.its-autumn.xyz/#)\n[GitHub repo](https://github.com/paradoxical-autumn/quoter)", inline=True)
+    aboutEmbedData.add_field(name="Useful links", value=f"[Invite link](https://discord.com/oauth2/authorize?client_id=1034045810993803325)\n[Quoter's Website](https://qtr.its-autumn.xyz/#)\n[GitHub repo](https://github.com/paradoxical-autumn/quoter)\n[Support server](https://discord.com/invite/rCXNafATx2)", inline=True)
     aboutEmbedData.add_field(name="Debugging information", value=f"QTRCore Build: {plugin.bot.d.BUILD}\nInstance started <t:{plugin.bot.d.INSTANCE_START_TIME}:R>\nModules rebooted <t:{plugin.bot.d.last_module_reboot}:R>", inline=True)
 
     await ctx.respond(aboutEmbedData)
