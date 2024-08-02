@@ -65,7 +65,7 @@ BOT_TOKEN = os.environ["BOT_TOKEN"]
 
 # create the bot application
 bot = lightbulb.BotApp(BOT_TOKEN, allow_color=False)
-miru.install(bot)
+bot.d.miru = miru.Client(bot, ignore_unknown_interactions=True)
 imgtxt.FontDB.SetDefaultEmojiOptions(imgtxt.EmojiOptions(parse_discord_emojis=True))
 imgtxt.FontDB.LoadFromDir("./defaultAssets/fonts")
 
@@ -73,39 +73,6 @@ imgtxt.FontDB.LoadFromDir("./defaultAssets/fonts")
 cooldownList = ["HEY!", "Wait up!", ">:C", "a.", ":ice_cube:", ":fire: :fire: :fire:", "Cooldown'd", "Fun remover", ":)", ":nerd: :nerd: :nerd:"]
 permissionErrorFlavourText = ["nope.", "I don't think I can do that...", ":nerd:", ":warning:", "oi", "The law requires I answer no.", "`permissionError`", "nuh uh."]
 errorFlavourText = ["i didn't touch nothing!", "deleting system 32...", "umm uhh", "im so silly!", "oops...", "i think i dropped something.", "[500] internal server error"]
-
-class bugReportModal(miru.Modal):
-    info = miru.TextInput(label="What we're you doing when the error happened?", style=hikari.TextInputStyle.PARAGRAPH, required=True, placeholder="Something like: \"i was just using the bot ;-;\"")
-    contact = miru.TextInput(label="Are we allowed to contact you?", style=hikari.TextInputStyle.SHORT, required=True, placeholder="yeah")
-
-    async def callback(self, ctx: miru.ModalContext) -> None:
-        embedData = {}
-
-        if ctx.author.avatar_url:
-            aviUrl = str(ctx.author.avatar_url)
-        else:
-            aviUrl = "https://cdn.discordapp.com/embed/avatars/0.png"
-        
-        embedData["embeds"] = [
-            {
-                "title": f"New bug report",
-                "description": f"from {ctx.author.username}",
-                "fields": [
-                    {
-                        "name": "explanation",
-                        "value": self.info.value
-                    },
-                    {
-                        "name": "contact allowed?",
-                        "value": self.contact.value
-                    }
-                ]
-            }
-        ]
-
-        requests.post(os.environ["ERROR_WEBHOOK"], json=embedData)
-
-        await ctx.respond("sent, thanks for the report!")
 
 class bugReportView(miru.View):
     pass
