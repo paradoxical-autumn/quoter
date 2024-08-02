@@ -30,7 +30,11 @@ Run `python3 -m venv venv`. if you're using windows it's probably `python` and n
 
 Just run `pip install -U -r requirements.txt`
 
-5. **Run the bot client**
+5. **Set the owner ID**
+
+Edit `src/cfgs/ranks.json` and add your account ID into the `devTools` list. It should be formatted as a string.
+
+6. **Run the bot client**
 
 We don't need to compile it. The command I use to run it is `python3 -OO main.py`
 *(the `-OO` flag does some optimisation)*
