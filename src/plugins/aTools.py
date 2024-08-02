@@ -2,14 +2,20 @@ import hikari, lightbulb, json, logging, random, math, time
 
 plugin = lightbulb.Plugin("qtr_aTools", include_datastore=True)
 
-with open("cfgs/ranks.json", "r") as fp:
-    ranks = json.load(fp)
+def load(bot: lightbulb.BotApp):
+    global ranks
 
-def load(bot: lightbulb.BotApp):   
     try:
         bot.add_plugin(plugin)
     except lightbulb.CommandAlreadyExists as err:
         logging.error(err)
+    
+    try:
+        with open("cfgs/ranks.json", "r") as fp:
+            ranks = json.load(fp)
+    except FileNotFoundError:
+        logging.critical("Unable to load ranks file. ATools is disabled.")
+        bot.remove_plugin(plugin)
 
 def unload(bot: lightbulb.BotApp):
     bot.remove_plugin(plugin)
@@ -27,6 +33,7 @@ ACTIVITY_ENUMS = {
 
 @plugin.listener(hikari.events.MessageCreateEvent)
 async def on_message(event: hikari.MessageCreateEvent):
+    global ranks
     if not event.is_human:
         return
     
@@ -36,6 +43,9 @@ async def on_message(event: hikari.MessageCreateEvent):
         return
     
     if not event.content.startswith(me.mention):
+        return
+    
+    if str(event.author.id) not in ranks["devTools"]:
         return
     
     split_msg = event.message.content.split(" ")

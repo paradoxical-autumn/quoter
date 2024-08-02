@@ -1,20 +1,30 @@
-import lightbulb, logging, hikari, miru, sys, asyncio
+import lightbulb, logging, hikari, miru, sys, asyncio, json
 
 plugin = lightbulb.Plugin("self_destruct", include_datastore=True)
 
 def load(bot: lightbulb.BotApp):
+    global ranks
+
     try:
         bot.add_plugin(plugin)
     except lightbulb.CommandAlreadyExists as err:
         logging.error(err)
+
+    try:
+        with open("cfgs/ranks.json", "r") as fp:
+            ranks = json.load(fp)
+    except FileNotFoundError:
+        logging.critical("Unable to load ranks file. ATools is disabled.")
+        bot.remove_plugin(plugin)
 
 def unload(bot: lightbulb.BotApp):
     bot.remove_plugin(plugin)
 
 class sdCheck(miru.View):
     @miru.button(label="Self destruct", style=hikari.ButtonStyle.DANGER)
-    async def reallySelfDestructFrFrOng(self, ctx: miru.ViewContext, button: miru.Button):
-        if str(ctx.author.id) == "730089700139991060":
+    async def reallySelfDestructFrFrOng(self, button: miru.Button, ctx: miru.ViewContext):
+        global ranks
+        if str(ctx.author.id) in ranks["sd"]:
             await ctx.respond("okay. killing all bot threads. i hope you know what you're doing.")
             await asyncio.sleep(7)
             sys.exit()
