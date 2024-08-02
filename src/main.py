@@ -63,7 +63,7 @@ bot = lightbulb.BotApp(BOT_TOKEN, allow_color=False)
 bot.d.activityCycleRunning = True
 bot.d.activityCycle = []
 bot.d.INSTANCE_START_TIME = math.floor(time.time())
-bot.d.BUILD = "v2024.0802.1"
+bot.d.BUILD = "v2024.0802.2"
 bot.d.last_module_reboot = math.floor(time.time())
 
 miru.install(bot)
