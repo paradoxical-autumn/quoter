@@ -74,18 +74,6 @@ cooldownList = ["HEY!", "Wait up!", ">:C", "a.", ":ice_cube:", ":fire: :fire: :f
 permissionErrorFlavourText = ["nope.", "I don't think I can do that...", ":nerd:", ":warning:", "oi", "The law requires I answer no.", "`permissionError`", "nuh uh."]
 errorFlavourText = ["i didn't touch nothing!", "deleting system 32...", "umm uhh", "im so silly!", "oops...", "i think i dropped something.", "[500] internal server error"]
 
-errorDefinitions = {
-    type(hikari.errors.ForbiddenError): "It looks like I got 403'd. This is usually a sign of the bot being:\n- Incorrectly configured in the server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report!",
-    type(hikari.errors.UnauthorizedError): "It looks like I got 401'd. Maybe try again? If it is still being 401'd, consider filing a bug report",
-    type(hikari.errors.NotFoundError): "I can't seem to find a core interaction component. Maybe try again?"
-}
-
-dmdErrorDefinitions = {
-    type(hikari.errors.ForbiddenError): "# Sorry!\nIt looks like you recently tried to use a command which was 403'd. This is usually a sign of the bot being:\n- Incorrectly configured in the server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report at <https://github.com/paradoxical-autumn/quoter/issues>",
-    type(hikari.errors.UnauthorizedError): "# Sorry!\nIt looks like you recently tried to use a command which was 401'd. Maybe try again? If it is still being 401'd, consider filing a bug report at <https://github.com/paradoxical-autumn/quoter/issues>",
-    type(hikari.errors.NotFoundError): "# Sorry!\nWhen processing your recent command I was unable to find a core interaction component. Maybe try again?"
-}
-
 class bugReportModal(miru.Modal):
     info = miru.TextInput(label="What we're you doing when the error happened?", style=hikari.TextInputStyle.PARAGRAPH, required=True, placeholder="Something like: \"i was just using the bot ;-;\"")
     contact = miru.TextInput(label="Are we allowed to contact you?", style=hikari.TextInputStyle.SHORT, required=True, placeholder="yeah")
@@ -120,18 +108,7 @@ class bugReportModal(miru.Modal):
         await ctx.respond("sent, thanks for the report!")
 
 class bugReportView(miru.View):
-    @miru.button(label="Send bug report", style=hikari.ButtonStyle.PRIMARY)
-    async def openModal(self, button: miru.Button, ctx: miru.ViewContext):
-        modal = bugReportModal("Quoter Bug Report")
-        await ctx.respond_with_modal(modal)
-        button.disabled = True
-        button.label = "Bug report sent"
-        await ctx.edit_response(components=self)
-    
-    @miru.button(label="Create bug report", style=hikari.ButtonStyle.LINK, url="https://github.com/paradoxical-autumn/quoter/issues")
-    async def bug_report(self, button: miru.Button, ctx: miru.ViewContext):
-        # URL buttons have no callback.
-        pass
+    pass
 
 # error handler
 @bot.listen(lightbulb.CommandErrorEvent)
@@ -177,25 +154,49 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         requests.post(os.environ["ERROR_WEBHOOK"], json=errorEmbedData)
         # await event.context.respond(f"Something went wrong during invocation of command `{event.context.command.name}`.")
 
-        if type(event.exception.original) in dmdErrorDefinitions:
-            try:
-                await event.context.user.send(dmdErrorDefinitions[type(event.exception.original)])
-            except hikari.errors.ForbiddenError:
-                pass
-        
-        
         view = bugReportView()
-        message: hikari.Message
+        view.add_item(miru.Button(label="Send bug report", style=hikari.ButtonStyle.LINK, url="https://github.com/paradoxical-autumn/quoter/issues"))
 
-        if type(event.exception.original) in errorDefinitions:
-            message = await event.context.respond(hikari.Embed(title=random.choice(errorFlavourText), description=errorDefinitions[type(event.exception.original)], color=0xED4245), components=view)
-        else:
-            message = await event.context.respond(hikari.Embed(title=random.choice(errorFlavourText), description=f"An error occurred.", color=0xED4245), components=view)
+        instance_found = False
+
+        # WHY CAN I NOT USE A DICTIONARY OF ERRORS AND SEND IT BASED OFF OF THAT?
+
+        if isinstance(event.exception.original, hikari.errors.ForbiddenError):
+            instance_found = True
+            try:
+                await event.context.respond(hikari.Embed(title="[403] Forbidden", description=f"I was not allowed to execute that request due to a 403 error. This is usually a sign of the bot being:\n- Incorrectly configured in the server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report", color=0xED4245), components=view)
+            except:
+                # I know wildcard except clauses are bad but shh.
+                try:
+                    await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 403'd. This is usually a sign of the bot being:\n- Incorrectly configured in the server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
+                except hikari.errors.ForbiddenError:
+                    # if user does not allow DMs.
+                    pass
         
-        await view.start(message)
-        logging.fatal(f"{event.exception.original}")
+        if isinstance(event.exception.original, hikari.errors.UnauthorizedError):
+            instance_found = True
+            try:
+                await event.context.respond(hikari.Embed(title="[401] Unauthorized", description=f"An authorization error occurred. Please try again.", color=0xED4245), components=view)
+            except:
+                try:
+                    await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 401'd. Maybe try again? If it is still being 401'd, consider filing a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
+                except hikari.errors.ForbiddenError:
+                    pass
+        
+        if isinstance(event.exception.original, hikari.errors.NotFoundError):
+            instance_found = True
+            try:
+                await event.context.respond(hikari.Embed(title="[404] Not found", description=f"I was unable to reach a key resource. Maybe try again?", color=0xED4245), components=view)
+            except:
+                try:
+                    await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 404'd. Maybe try again? If it is still being 404'd, consider filing a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
+                except hikari.errors.ForbiddenError:
+                    pass
+        
+        if not instance_found:
+            await event.context.respond(hikari.Embed(title=random.choice(errorFlavourText), description=f"An unknown error occurred.", color=0xED4245), components=view)
 
-        await view.wait()
+        logging.fatal(f"{event.exception.original}")
 
     # Unwrap the exception to get the original cause
     exception = event.exception.__cause__ or event.exception
