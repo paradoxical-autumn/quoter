@@ -1,5 +1,4 @@
-import hikari, lightbulb, logging, sys
-from platform import uname
+import hikari, lightbulb, logging, sys, platform
 
 plugin = lightbulb.Plugin("qtr_about", include_datastore=True)
 
@@ -11,6 +10,8 @@ def load(bot: lightbulb.BotApp):
 
 def unload(bot: lightbulb.BotApp):
     bot.remove_plugin(plugin)
+
+uname = platform.uname()
 
 @plugin.command()
 @lightbulb.command("about", "Information about the bot", ephemeral=True)
