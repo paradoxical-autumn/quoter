@@ -84,10 +84,10 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         if isinstance(event.exception.original, hikari.errors.UnauthorizedError):
             instance_found = True
             try:
-                await event.context.respond(hikari.Embed(title="[401] Unauthorized", description=f"An authorization error occurred. Please try again.", color=0xED4245), components=view)
+                await event.context.respond(hikari.Embed(title="[401] Unauthorized", description=f"An authorization error occurred. Please try again. If it still isn't working, try it in a different channel/server.", color=0xED4245), components=view)
             except:
                 try:
-                    await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 401'd. Maybe try again? If it is still being 401'd, consider filing a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
+                    await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 401'd. Maybe try again?\n\nIf it is still being 401'd after that:\n- Try it in a different channel/server\n- Consider filing a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
                 except hikari.errors.ForbiddenError:
                     pass
         
