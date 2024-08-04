@@ -1,4 +1,4 @@
-import hikari, lightbulb, miru, requests, logging, os, random
+import hikari, lightbulb, miru, requests, logging, os, random, traceback
 from datetime import datetime
 
 plugin = lightbulb.Plugin("qtr_handlers", include_datastore=True)
@@ -22,6 +22,13 @@ class bugReportView(miru.View):
 @plugin.listener(lightbulb.CommandErrorEvent)
 async def on_error(event: lightbulb.CommandErrorEvent) -> None:
     if isinstance(event.exception, lightbulb.CommandInvocationError):
+        tb_str = traceback.format_exception(type(event.exception.original), value=event.exception.original, tb=event.exception.original.__traceback__)
+
+        fmt_trcbk = ""
+        tbi = tb_str[-2].replace("\\n", "\n")
+        tbi = tbi.strip()
+        fmt_trcbk += tbi
+
         errorEmbedData = {}
 
         if event.context.author.avatar_url:
@@ -54,6 +61,11 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
                         "name": "user information",
                         "inline": True,
                         "value": f"{event.context.author.username=}\n{event.context.author.id=}"
+                    },
+                    {
+                        "name": "traceback information",
+                        "inline": True,
+                        "value": f"`{fmt_trcbk}`"
                     }
                 ]
             }
