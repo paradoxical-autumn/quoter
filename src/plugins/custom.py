@@ -131,7 +131,7 @@ async def unofficial(ctx: lightbulb.MessageContext):
     except:
         # hikari.User.default_avatar_url
         avatar = Image.open(requests.get("https://cdn.discordapp.com/embed/avatars/0.png", stream=True).raw) # okay so they don't have one
-        logging.warning("default avatar lol.")
+        logging.warning("default avatar!")
     
     #for i in cleanedBannedWords:
     #    quotestr = quotestr.replace(i, "*")
