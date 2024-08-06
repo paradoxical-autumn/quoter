@@ -39,6 +39,9 @@ async def on_message(event: hikari.MessageCreateEvent):
     
     me = plugin.bot.get_me()
 
+    if event.content == None:
+        return
+
     if me.id not in event.message.user_mentions_ids:
         return
     
