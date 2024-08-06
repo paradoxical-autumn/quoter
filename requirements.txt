@@ -1,8 +1,8 @@
-hikari==2.0.0.dev122
+hikari==2.0.0.dev126
 hikari-lightbulb==2.3.5
-hikari-miru==3.4.0
-Pillow
-python-dotenv
-imagetext_py
-requests
-asyncio
+hikari-miru==4.1.1
+Pillow==10.4.0
+python-dotenv==1.0.1
+imagetext_py==2.2.0
+requests==2.32.3
+asyncio==3.4.3
