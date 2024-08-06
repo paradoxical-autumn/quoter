@@ -25,9 +25,9 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         tb_str = traceback.format_exception(type(event.exception.original), value=event.exception.original, tb=event.exception.original.__traceback__)
 
         fmt_trcbk = ""
-        tbi = tb_str[-2].replace("\\n", "\n")
-        tbi = tbi.strip()
-        fmt_trcbk += tbi
+        for line in tb_str:
+            line = line.replace("\\n", "\n")
+            fmt_trcbk += line
 
         errorEmbedData = {}
 
