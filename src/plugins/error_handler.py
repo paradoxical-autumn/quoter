@@ -65,7 +65,7 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
                     {
                         "name": "traceback information",
                         "inline": True,
-                        "value": f"`{fmt_trcbk}`"
+                        "value": f"`fmt_trcbk` currently disabled"
                     }
                 ]
             }
