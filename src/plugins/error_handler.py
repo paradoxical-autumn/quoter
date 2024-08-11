@@ -20,6 +20,7 @@ errorFlavourText = ["i didn't touch nothing!", "deleting system 32...", "umm uhh
 ERR_403_CHANNEL = f"I was not allowed to execute that request due to a 403 error. This is usually a sign of the bot being:\n- Incorrectly configured in this server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report\n\nFor more information, please see [common errors](<https://qtr.its-autumn.xyz/#common-errors>)"
 ERR_401_CHANNEL = f"An authorization error occurred. Please try again. If it still isn't working, try it in a different channel/server.\n\nFor more information, please see [common errors](<https://qtr.its-autumn.xyz/#common-errors>)"
 ERR_404_CHANNEL = f"I was unable to reach a key resource. Maybe try again?\n\nFor more information, please see [common errors](<https://qtr.its-autumn.xyz/#common-errors>)"
+ERR_400_CHANNEL = f"I was hit by a 400, usually this signifies a message content error. If you're trying to quote something with a lot of text, this might be the issue."
 
 ERR_403_DMS = "# Sorry!\nIt looks like you recently tried to use a command which was 403'd. This is usually a sign of the bot being:\n- Incorrectly configured in the server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report at <https://github.com/paradoxical-autumn/quoter/issues>.\n\nFor more information, please see [common errors](<https://qtr.its-autumn.xyz/#common-errors>)"
 ERR_401_DMS = "# Sorry!\nIt looks like you recently tried to use a command which was 401'd. Maybe try again?\n\nIf it is still being 401'd after that:\n- Try it in a different channel/server\n- Consider filing a bug report at <https://github.com/paradoxical-autumn/quoter/issues>\n\nFor more information, please see [common errors](<https://qtr.its-autumn.xyz/#common-errors>)"
@@ -89,6 +90,10 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         instance_found = False
 
         # WHY CAN I NOT USE A DICTIONARY OF ERRORS AND SEND IT BASED OFF OF THAT?
+
+        if isinstance(event.exception.original, hikari.errors.BadRequestError):
+            instance_found = True
+            await event.context.respond(hikari.Embed(title="[400] Bad Request", description=ERR_400_CHANNEL), components=view)
 
         if isinstance(event.exception.original, hikari.errors.ForbiddenError):
             instance_found = True

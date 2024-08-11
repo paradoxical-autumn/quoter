@@ -1,5 +1,6 @@
 import lightbulb, logging, miru, sys, asyncio
 import hikari
+import hikari.errors
 
 plugin = lightbulb.Plugin("error_out", include_datastore=True)
 
@@ -16,11 +17,12 @@ error_parsers = {
     "EOFError": EOFError,
     "ForbiddenError": hikari.errors.ForbiddenError(url="https://qtr.its-autumn.xyz/", raw_body="manually caused debug crash", headers=[]),
     "UnauthorizedError": hikari.errors.UnauthorizedError(url="https://qtr.its-autumn.xyz/", raw_body="manually caused debug crash", headers=[]),
-    "NotFoundError": hikari.errors.NotFoundError(url="https://qtr.its-autumn.xyz/", raw_body="manually caused debug crash", headers=[])
+    "NotFoundError": hikari.errors.NotFoundError(url="https://qtr.its-autumn.xyz/", raw_body="manually caused debug crash", headers=[]),
+    "BadRequestError": hikari.errors.BadRequestError(url="https://qtr.its-autumn.xyz/", headers=[], raw_body="raw!!")
 }
 
 @plugin.command
-@lightbulb.option("error_type", "The type of error to cause", type=str, choices=["EOFError", "ForbiddenError", "UnauthorizedError", "NotFoundError"])
+@lightbulb.option("error_type", "The type of error to cause", type=str, choices=["EOFError", "ForbiddenError", "UnauthorizedError", "NotFoundError", "BadRequestError"])
 @lightbulb.command('error', "cause an error for debugging", auto_defer=False)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def error_out(ctx: lightbulb.SlashContext) -> None:
