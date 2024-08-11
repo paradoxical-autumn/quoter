@@ -8,11 +8,11 @@ Quoter is a Discord bot that allows for users to make visual quotes out of image
 That branch contains the code that I've worked on but haven't tested. Don't expect the code there to work.
 
 ## A comment about this bot
-I'd prefer it if you just added [my version](https://discord.com/oauth2/authorize?client_id=1034045810993803325) of the bot to your servers, but if it goes down or if you just REALLLYYYY want a self hosted instance, I've released this code for ya.
+This is an archive of my version of the bot before it died. Feel free to use this to self host.
+glhf.
 
-Nevertheless...
 ## Running
-1. **Downloading the production ready code**
+1. **Downloading the code**
 
 Check out the [latest releases](https://github.com/paradoxical-autumn/quoter/releases) for the most up to date and "finished" build. That doesn't mean stable build, just up to date and "functional".
 If you need to guarantee stability, get a stable build from that list.
