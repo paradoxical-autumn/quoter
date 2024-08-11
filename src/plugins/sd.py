@@ -1,6 +1,6 @@
 import lightbulb, logging, hikari, miru, sys, asyncio, json
 
-plugin = lightbulb.Plugin("self_destruct")
+plugin = lightbulb.Plugin("self_destruct", include_datastore=True)
 
 def load(bot: lightbulb.BotApp):
     global ranks
@@ -38,8 +38,8 @@ async def onMessage(event: hikari.MessageCreateEvent):
         if str(event.author_id) == "730089700139991060":
             if event.content == f"{me.mention} sd":
                 view = sdCheck(timeout=30)
-                msg = await event.message.respond("u sure you wanna make the bot self destruct? this action is irreversible.", components=view)
+                await event.message.respond("u sure you wanna make the bot self destruct? this action is irreversible.", components=view)
 
-                await view.start(msg)
-                await view.wait()
-                await msg.edit("component timed out.", components=None)
+                event.app.d.miru.start_view(view)
+                #await view.wait()
+                #await msg.edit("component timed out.", components=None)

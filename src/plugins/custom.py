@@ -11,7 +11,7 @@ QUOTE_SIZE = 96
 USER_DEETZ_SIZE = 64
 QUOTE_PXLS = 900
 
-plugin = lightbulb.Plugin("qtr_CUSTOM")
+plugin = lightbulb.Plugin("qtr_CUSTOM", include_datastore=True)
 
 notWindows = True
 qtr_COOLDOWN = lightbulb.buckets.UserBucket

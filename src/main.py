@@ -67,6 +67,7 @@ bot.d.BUILD = "v2024.0803.0"
 bot.d.last_module_reboot = math.floor(time.time())
 
 miru.install(bot)
+bot.d.miru = miru.Client(bot, ignore_unknown_interactions=True)
 imgtxt.FontDB.SetDefaultEmojiOptions(imgtxt.EmojiOptions(parse_discord_emojis=True))
 imgtxt.FontDB.LoadFromDir("./defaultAssets/fonts")
 
