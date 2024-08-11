@@ -16,6 +16,15 @@ cooldownList = ["HEY!", "Wait up!", ">:C", "a.", ":ice_cube:", ":fire: :fire: :f
 permissionErrorFlavourText = ["nope.", "I don't think I can do that...", ":nerd:", ":warning:", "oi", "The law requires I answer no.", "`permissionError`", "nuh uh."]
 errorFlavourText = ["i didn't touch nothing!", "deleting system 32...", "umm uhh", "im so silly!", "oops...", "i think i dropped something.", "[500] internal server error"]
 
+# error messages
+ERR_403_CHANNEL = f"I was not allowed to execute that request due to a 403 error. This is usually a sign of the bot being:\n- Incorrectly configured in this server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report\n\nFor more information, please see [common errors](<https://qtr.its-autumn.xyz/#common-errors>)"
+ERR_401_CHANNEL = f"An authorization error occurred. Please try again. If it still isn't working, try it in a different channel/server.\n\nFor more information, please see [common errors](<https://qtr.its-autumn.xyz/#common-errors>)"
+ERR_404_CHANNEL = f"I was unable to reach a key resource. Maybe try again?\n\nFor more information, please see [common errors](<https://qtr.its-autumn.xyz/#common-errors>)"
+
+ERR_403_DMS = "# Sorry!\nIt looks like you recently tried to use a command which was 403'd. This is usually a sign of the bot being:\n- Incorrectly configured in the server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report at <https://github.com/paradoxical-autumn/quoter/issues>.\n\nFor more information, please see [common errors](<https://qtr.its-autumn.xyz/#common-errors>)"
+ERR_401_DMS = "# Sorry!\nIt looks like you recently tried to use a command which was 401'd. Maybe try again?\n\nIf it is still being 401'd after that:\n- Try it in a different channel/server\n- Consider filing a bug report at <https://github.com/paradoxical-autumn/quoter/issues>\n\nFor more information, please see [common errors](<https://qtr.its-autumn.xyz/#common-errors>)"
+ERR_404_DMS = "# Sorry!\nIt looks like you recently tried to use a command which was 404'd. Maybe try again? If it is still being 404'd, consider filing a bug report at <https://github.com/paradoxical-autumn/quoter/issues>\n\nFor more information, please see [common errors](<https://qtr.its-autumn.xyz/#common-errors>)"
+
 class bugReportView(miru.View):
     pass
 
@@ -84,11 +93,11 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         if isinstance(event.exception.original, hikari.errors.ForbiddenError):
             instance_found = True
             try:
-                await event.context.respond(hikari.Embed(title="[403] Forbidden", description=f"I was not allowed to execute that request due to a 403 error. This is usually a sign of the bot being:\n- Incorrectly configured in the server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report", color=0xED4245), components=view)
+                await event.context.respond(hikari.Embed(title="[403] Forbidden", description=ERR_403_CHANNEL, color=0xED4245), components=view)
             except:
                 # I know wildcard except clauses are bad but shh.
                 try:
-                    await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 403'd. This is usually a sign of the bot being:\n- Incorrectly configured in the server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
+                    await event.context.user.send(ERR_403_DMS)
                 except hikari.errors.ForbiddenError:
                     # if user does not allow DMs.
                     pass
@@ -96,20 +105,20 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         if isinstance(event.exception.original, hikari.errors.UnauthorizedError):
             instance_found = True
             try:
-                await event.context.respond(hikari.Embed(title="[401] Unauthorized", description=f"An authorization error occurred. Please try again. If it still isn't working, try it in a different channel/server.", color=0xED4245), components=view)
+                await event.context.respond(hikari.Embed(title="[401] Unauthorized", description=ERR_401_CHANNEL, color=0xED4245), components=view)
             except:
                 try:
-                    await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 401'd. Maybe try again?\n\nIf it is still being 401'd after that:\n- Try it in a different channel/server\n- Consider filing a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
+                    await event.context.user.send(ERR_401_DMS)
                 except hikari.errors.ForbiddenError:
                     pass
         
         if isinstance(event.exception.original, hikari.errors.NotFoundError):
             instance_found = True
             try:
-                await event.context.respond(hikari.Embed(title="[404] Not found", description=f"I was unable to reach a key resource. Maybe try again?", color=0xED4245), components=view)
+                await event.context.respond(hikari.Embed(title="[404] Not found", description=ERR_404_CHANNEL, color=0xED4245), components=view)
             except:
                 try:
-                    await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 404'd. Maybe try again? If it is still being 404'd, consider filing a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
+                    await event.context.user.send(ERR_404_DMS)
                 except hikari.errors.ForbiddenError:
                     pass
         
@@ -129,13 +138,13 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
             await event.context.respond(hikari.Embed(title=random.choice(cooldownList), description=f"Retry after `{exception.retry_after:.2f}` seconds.", color=0x5865F2))
         except hikari.ForbiddenError:
             try:
-                await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 403'd (the command was on cooldown anyway). This is usually a sign of the bot being:\n- Incorrectly configured in the server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
+                await event.context.user.send(ERR_403_DMS)
             except hikari.errors.ForbiddenError:
                 # if user does not allow DMs.
                 pass
         except hikari.UnauthorizedError:
             try:
-                await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 401'd (the command was on cooldown anyway). Maybe try again?\n\nIf it is still being 401'd after that:\n- Try it in a different channel/server\n- Consider filing a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
+                await event.context.user.send(ERR_401_DMS)
             except hikari.errors.ForbiddenError:
                 pass
 
