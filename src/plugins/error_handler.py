@@ -125,7 +125,20 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         await event.context.respond(hikari.Embed(title=random.choice(permissionErrorFlavourText), description=":no_entry_sign: You don't have authorisation to run that command!", color=0xFEE75C))
 
     elif isinstance(exception, lightbulb.CommandIsOnCooldown):
-        await event.context.respond(hikari.Embed(title=random.choice(cooldownList), description=f"Retry after `{exception.retry_after:.2f}` seconds.", color=0x5865F2))
+        try:
+            await event.context.respond(hikari.Embed(title=random.choice(cooldownList), description=f"Retry after `{exception.retry_after:.2f}` seconds.", color=0x5865F2))
+        except hikari.ForbiddenError:
+            try:
+                await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 403'd (the command was on cooldown anyway). This is usually a sign of the bot being:\n- Incorrectly configured in the server\n- Caught by automod\n\nFor more information, contact the server admins, maybe ask them something like \"Hey, Quoter isn't working here, has it been caught by automod or does it lack the permission to upload files?\"\n\nIf this is not a problem with the server setup, please file a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
+            except hikari.errors.ForbiddenError:
+                # if user does not allow DMs.
+                pass
+        except hikari.UnauthorizedError:
+            try:
+                await event.context.user.send("# Sorry!\nIt looks like you recently tried to use a command which was 401'd (the command was on cooldown anyway). Maybe try again?\n\nIf it is still being 401'd after that:\n- Try it in a different channel/server\n- Consider filing a bug report at <https://github.com/paradoxical-autumn/quoter/issues>")
+            except hikari.errors.ForbiddenError:
+                pass
+
 
     elif ...:
         ...
